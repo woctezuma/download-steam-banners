@@ -69,6 +69,7 @@ async def main():
                 except KeyError:
                     continue
 
+                # Reference: https://stackoverflow.com/a/51745925
                 async with session.get(banner_url) as resp:
                     if resp.status == 200:
                         f = await aiofiles.open(banner_file_name, mode='wb')
