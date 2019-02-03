@@ -6,13 +6,13 @@
 [![Code coverage][codecov-image]][codecov]
 [![Code Quality][codacy-image]][codacy]
 
-This repository contains Python code to download the store banners of every Steam game.
+This repository contains Python code to retrieve Steam games with similar store banners.
 
 # Usage
 
 First, download the app details with [`steam-api`](https://github.com/woctezuma/steam-api).
 
-Then, run `main.py`.
+Then, run `main.py` to download the store banners of every Steam game.
 
 <!-- Definitions -->
 
@@ -28,3 +28,4 @@ Then, run `main.py`.
 
 [codacy]: <https://www.codacy.com/app/woctezuma/download-steam-banners>
 [codacy-image]: <https://api.codacy.com/project/badge/Grade/c3ff7d48630544209f3adf29b03e1048>
+
