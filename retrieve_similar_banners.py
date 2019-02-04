@@ -50,6 +50,11 @@ def retrieve_similar_banners(query_hash, hash_search_index, num_neighbors=3):
     return similar_app_ids
 
 
+def get_store_url(app_id):
+    store_url = 'https://store.steampowered.com/app/' + app_id
+    return store_url
+
+
 def test_hash_search_index(hashmethod):
     search_index_with_hash_as_str = get_search_index_with_hash_as_str(hashmethod)
 
@@ -72,7 +77,7 @@ def test_hash_search_index(hashmethod):
             for (counter, app_id) in enumerate(app_id_group):
                 app_details = get_app_details(app_id)
                 app_name = app_details['name']
-                print('{}) app: {} ({})'.format(counter + 1, app_id, app_name))
+                print('{}) app: {} ({} @ {})'.format(counter + 1, app_id, app_name, get_store_url(app_id)))
 
     return
 
