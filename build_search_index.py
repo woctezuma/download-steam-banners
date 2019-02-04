@@ -66,11 +66,12 @@ def build_search_index(hashmethod=None):
         image_filename = app_id_to_image_filename(app_id)
         image = Image.open(image_filename)
         hash = hashfunc(image)
+        hash_as_str = str(hash)  # NB: To convert back, use imagehash.hex_to_hash()
         try:
-            search_index[hash].add(app_id)
+            if app_id not in search_index[hash_as_str]:
+                search_index[hash_as_str].append(app_id)
         except KeyError:
-            search_index[hash] = set()
-            search_index[hash].add(app_id)
+            search_index[hash_as_str] = [app_id]
 
     with open(get_search_index_filename(hashmethod), 'w') as f:
         json.dump(search_index, f)
