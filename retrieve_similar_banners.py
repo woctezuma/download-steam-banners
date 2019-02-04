@@ -35,7 +35,7 @@ def reverse_search_index(hash_search_index):
 
 def retrieve_similar_banners(query_hash, hash_search_index, num_neighbors=3):
     reference_hashes = list(hash_search_index.keys())
-    distances = np.array([(query_hash - reference_hash) ** 2 for reference_hash in reference_hashes])
+    distances = np.array([np.abs(query_hash - reference_hash) for reference_hash in reference_hashes])
 
     # Reference: https://stackoverflow.com/a/23734295
     ind = np.argpartition(distances, num_neighbors)[:num_neighbors]
