@@ -16,12 +16,17 @@ def get_file_extension():
     return file_extension
 
 
+def get_hash_folder():
+    hash_folder = 'hash/'
+    return hash_folder
+
+
 def get_search_index_filename(hashmethod=None):
     if hashmethod is None:
         hashmethod_str = ''
     else:
         hashmethod_str = '_' + hashmethod
-    search_index_filename = 'search_index' + hashmethod_str + '.json'
+    search_index_filename = get_hash_folder() + 'search_index' + hashmethod_str + '.json'
     return search_index_filename
 
 
