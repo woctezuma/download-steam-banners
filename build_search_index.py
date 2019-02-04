@@ -53,7 +53,7 @@ def build_search_index(hashmethod=None):
     try:
         with open(get_search_index_filename(hashmethod), 'r') as f:
             search_index = json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
         search_index = dict()
 
     for (counter, app_id) in enumerate(sorted(app_ids, key=int)):
