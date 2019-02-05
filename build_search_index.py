@@ -35,6 +35,8 @@ def list_app_ids():
 
     app_ids = [banner.name.strip(get_file_extension()) for banner in image_filenames]
 
+    app_ids = sorted(app_ids, key=int)
+
     return app_ids
 
 
