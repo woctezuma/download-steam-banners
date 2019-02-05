@@ -2,3 +2,4 @@ aiohttp==3.5.4
 aiofiles==0.4.0
 opencv-contrib-python==4.0.0.21
 imagehash==4.0
+matplotlib
