@@ -17,8 +17,8 @@ def get_hash_search_index(search_index_with_hash_as_str):
     hash_search_index = dict()
 
     for hash_as_str in search_index_with_hash_as_str:
-        hash = imagehash.hex_to_hash(hash_as_str)
-        hash_search_index[hash] = search_index_with_hash_as_str[hash_as_str]
+        hash_value = imagehash.hex_to_hash(hash_as_str)
+        hash_search_index[hash_value] = search_index_with_hash_as_str[hash_as_str]
 
     return hash_search_index
 
@@ -26,9 +26,9 @@ def get_hash_search_index(search_index_with_hash_as_str):
 def reverse_search_index(hash_search_index):
     reversed_search_index = dict()
 
-    for hash in hash_search_index:
-        for app_id in hash_search_index[hash]:
-            reversed_search_index[app_id] = hash
+    for hash_value in hash_search_index:
+        for app_id in hash_search_index[hash_value]:
+            reversed_search_index[app_id] = hash_value
 
     return reversed_search_index
 

@@ -78,8 +78,8 @@ def build_search_index(hashmethod=None):
 
         image_filename = app_id_to_image_filename(app_id)
         image = Image.open(image_filename)
-        hash = hashfunc(image)
-        hash_as_str = str(hash)  # NB: To convert back, use imagehash.hex_to_hash()
+        hash_value = hashfunc(image)
+        hash_as_str = str(hash_value)  # NB: To convert back, use imagehash.hex_to_hash()
         try:
             if app_id not in search_index[hash_as_str]:
                 search_index[hash_as_str].append(app_id)
