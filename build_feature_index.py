@@ -74,7 +74,8 @@ def build_feature_index(verbose=False):
             for marker in kp:
                 img2 = cv.drawMarker(img2,
                                      tuple(int(i) for i in marker.pt), color=(0, 255, 0), markerType=cv.MARKER_DIAMOND)
-            plt.imshow(img2), plt.show()
+            plt.imshow(img2)
+            plt.show()
 
     np.save(get_descriptor_database_filename(), descriptor_database)
     np.save(get_descriptor_img_id_filename(), descriptor_img_id)
