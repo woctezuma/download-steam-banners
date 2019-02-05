@@ -6,8 +6,13 @@ import aiofiles
 import aiohttp
 
 
-def get_pycharm_path(user_name='Woctezuma'):
-    pycharm_path = 'C:/Users/' + user_name + '/PycharmProjects/'
+def get_user_name():
+    user_name = 'Woctezuma'
+    return user_name
+
+
+def get_pycharm_path():
+    pycharm_path = 'C:/Users/' + get_user_name() + '/PycharmProjects/'
     return pycharm_path
 
 
