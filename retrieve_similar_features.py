@@ -18,7 +18,7 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     orb = cv.ORB_create()
 
     # find the keypoints and descriptors with ORB
-    query_kp, query_des = orb.detectAndCompute(query_img, None)
+    _, query_des = orb.detectAndCompute(query_img, None)
 
     # FLANN parameters
     FLANN_INDEX_LSH = 6
