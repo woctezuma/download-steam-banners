@@ -31,7 +31,10 @@ def get_label_database_filename():
 def load_keras_model(include_top=True):
     # The function argument allows to choose whether to include the last model layer for label prediction.
 
-    model = NASNetMobile(include_top=include_top)
+    if include_top:
+        model = NASNetMobile(include_top=include_top)
+    else:
+        model = NASNetMobile(include_top=include_top, pooling='avg')
     target_model_size = (224, 224)
 
     return model, target_model_size
