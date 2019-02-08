@@ -60,6 +60,7 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     if keras_model is not None:
         row_no = app_ids.index(query_app_id)
         trimmed_descriptor_database = label_database.copy()
+        # Trimming the database is optional here.
         trimmed_descriptor_database[row_no, :] = 0
 
         # For FLANN, the query and the database should have the same dtype 'float32'.
@@ -67,7 +68,10 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
 
         num_neighbors = 10
     else:
-        # Remove the features of the query from the database
+        # Remove the features of the query from the database.
+        # NB: Trimming the database is MANDATORY because we only keep THE best match for each feature (if the ratio
+        # 1stNN/2ndNN<0.7), and then count the number of occurrences of each appID. Otherwise, we would retrieve the
+        # query, and no other appID.
         ind, _ = np.where(descriptor_img_id == app_ids.index(query_app_id))
         trimmed_descriptor_database = descriptor_database.copy()
         trimmed_descriptor_database[ind] = 0
