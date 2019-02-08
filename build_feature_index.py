@@ -68,7 +68,7 @@ def label_image(image, model, verbose=False):
     return yhat
 
 
-def build_feature_index(verbose=False, save_keras_output=False):
+def build_feature_index(verbose=False, save_keras_output=False, include_top=True):
     # Reference: https://docs.opencv.org/4.0.1/dc/dc3/tutorial_py_matcher.html
 
     app_ids = list_app_ids()
@@ -81,7 +81,7 @@ def build_feature_index(verbose=False, save_keras_output=False):
     orb = cv.ORB_create()
 
     # Load the model
-    model, target_model_size = load_keras_model()
+    model, target_model_size = load_keras_model(include_top)
 
     descriptor_database = None
     descriptor_img_id = None
@@ -160,4 +160,4 @@ def build_feature_index(verbose=False, save_keras_output=False):
 
 
 if __name__ == '__main__':
-    build_feature_index(verbose=False, save_keras_output=True)
+    build_feature_index(verbose=False, save_keras_output=True, include_top=False)
