@@ -45,17 +45,15 @@ def label_image(image, model, verbose=False):
     # predict the probability across all output classes
     yhat = model.predict(image)
 
-    if model.output_names[0] == 'predictions':
-
+    if verbose and model.output_names[0] == 'predictions':
         # convert the probabilities to class labels
         labels = decode_predictions(yhat)
 
         # retrieve the most likely result, e.g. highest probability
         label = labels[0][0]
 
-        if verbose:
-            # print the classification
-            print('%s (%.2f%%)' % (label[1], label[2] * 100))
+        # print the classification
+        print('%s (%.2f%%)' % (label[1], label[2] * 100))
 
     return yhat
 
