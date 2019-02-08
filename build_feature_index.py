@@ -23,7 +23,14 @@ def get_descriptor_img_id_filename():
     return descriptor_img_id_filename
 
 
+def get_label_database_filename():
+    label_database_filename = 'label_database.npy'
+    return label_database_filename
+
+
 def load_keras_model(include_top=True):
+    # The function argument allows to choose whether to include the last model layer for label prediction.
+
     model = NASNetMobile(include_top=include_top)
     target_model_size = (224, 224)
 
@@ -58,7 +65,7 @@ def label_image(image, model, verbose=False):
     return yhat
 
 
-def build_feature_index(verbose=False):
+def build_feature_index(verbose=False, save_keras_output=False):
     # Reference: https://docs.opencv.org/4.0.1/dc/dc3/tutorial_py_matcher.html
 
     app_ids = list_app_ids()
@@ -75,6 +82,11 @@ def build_feature_index(verbose=False):
 
     descriptor_database = None
     descriptor_img_id = None
+    Y_hat = None
+
+    if save_keras_output:
+        # Assumption: the model includes the last layer for label prediction.
+        Y_hat = np.zeros((num_games, model.output_shape[1]))
 
     for (counter, app_id) in enumerate(app_ids):
 
@@ -86,8 +98,10 @@ def build_feature_index(verbose=False):
         image_filename = app_id_to_image_filename(app_id)
         img = cv.imread(image_filename, cv.IMREAD_COLOR)
 
-        image = load_img(image_filename, target_size=target_model_size)
-        label_image(image, model)
+        if Y_hat is not None:
+            image = load_img(image_filename, target_size=target_model_size)
+            yhat = label_image(image, model)  # runtime: 2 seconds
+            Y_hat[counter, :] = yhat
 
         # find the keypoints and descriptors with ORB
         kp, des = orb.detectAndCompute(img, None)
@@ -124,6 +138,9 @@ def build_feature_index(verbose=False):
 
     np.save(get_descriptor_database_filename(), descriptor_database)
     np.save(get_descriptor_img_id_filename(), descriptor_img_id)
+
+    if Y_hat is not None:
+        np.save(get_label_database_filename(), Y_hat)
 
     return
 
