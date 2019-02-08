@@ -23,18 +23,23 @@ def get_descriptor_img_id_filename():
     return descriptor_img_id_filename
 
 
-def get_label_database_filename():
-    label_database_filename = 'label_database.npy'
+def get_label_database_filename(pooling=None):
+    if pooling is None:
+        pooling_str = ''
+    else:
+        pooling_str = '.' + pooling
+
+    label_database_filename = 'label_database' + pooling_str + '.npy'
     return label_database_filename
 
 
-def load_keras_model(include_top=True):
+def load_keras_model(include_top=True, pooling='avg'):
     # The function argument allows to choose whether to include the last model layer for label prediction.
 
     if include_top:
         model = MobileNet(include_top=include_top)
     else:
-        model = MobileNet(include_top=include_top, pooling='avg')
+        model = MobileNet(include_top=include_top, pooling=pooling)
     target_model_size = (224, 224)
 
     return model, target_model_size
@@ -68,7 +73,7 @@ def label_image(image, model, verbose=False):
     return yhat
 
 
-def build_feature_index(verbose=False, save_keras_output=False, include_top=True):
+def build_feature_index(verbose=False, save_keras_output=False, include_top=True, pooling='avg'):
     # Reference: https://docs.opencv.org/4.0.1/dc/dc3/tutorial_py_matcher.html
 
     app_ids = list_app_ids()
@@ -81,7 +86,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
     orb = cv.ORB_create()
 
     # Load the model
-    model, target_model_size = load_keras_model(include_top)
+    model, target_model_size = load_keras_model(include_top, pooling=pooling)
 
     descriptor_database = None
     descriptor_img_id = None
@@ -89,7 +94,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
 
     if save_keras_output:
         try:
-            Y_hat = np.load(get_label_database_filename())
+            Y_hat = np.load(get_label_database_filename(pooling))
         except FileNotFoundError:
             # Assumption: the model includes the last layer for label prediction.
             Y_hat = np.zeros((num_games, model.output_shape[1]))
@@ -102,7 +107,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
 
         if (counter % 300) == 0:
             if Y_hat is not None:
-                np.save(get_label_database_filename(), Y_hat)
+                np.save(get_label_database_filename(pooling), Y_hat)
             print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
             print('Elapsed time: {:.2f} s'.format(time() - start))
             start = time()
@@ -151,7 +156,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
                 plt.show()
 
     if Y_hat is not None:
-        np.save(get_label_database_filename(), Y_hat)
+        np.save(get_label_database_filename(pooling), Y_hat)
     else:
         np.save(get_descriptor_database_filename(), descriptor_database)
         np.save(get_descriptor_img_id_filename(), descriptor_img_id)
@@ -160,4 +165,5 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
 
 
 if __name__ == '__main__':
-    build_feature_index(verbose=False, save_keras_output=True, include_top=False)
+    pooling = 'avg'  # 'avg' or 'max'
+    build_feature_index(verbose=False, save_keras_output=True, include_top=False, pooling=pooling)

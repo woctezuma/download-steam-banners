@@ -13,7 +13,7 @@ from retrieve_similar_banners import get_store_url
 
 
 def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor_img_id=None,
-                              label_database=None, keras_model=None, target_model_size=None):
+                              label_database=None, keras_model=None, target_model_size=None, pooling=None):
     image_filename = app_id_to_image_filename(query_app_id)
 
     if keras_model is not None:
@@ -53,7 +53,7 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         descriptor_img_id = np.load(get_descriptor_img_id_filename())
 
     if label_database is None:
-        label_database = np.load(get_label_database_filename())
+        label_database = np.load(get_label_database_filename(pooling))
 
     app_ids = list_app_ids()
 
@@ -116,21 +116,23 @@ def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed
 
 
 if __name__ == '__main__':
+    pooling = 'avg'  # 'avg' or 'max'
+
     descriptor_database = np.load(get_descriptor_database_filename())
     descriptor_img_id = np.load(get_descriptor_img_id_filename())
-    label_database = np.load(get_label_database_filename())
+    label_database = np.load(get_label_database_filename(pooling))
 
     query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
 
     use_keras_features = True
 
     if use_keras_features:
-        keras_model, target_model_size = load_keras_model(include_top=False)
+        keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
     else:
         keras_model = None
         target_model_size = None
 
     for query_app_id in query_app_ids:
         reference_app_id_counter = retrieve_similar_features(query_app_id, descriptor_database, descriptor_img_id,
-                                                             label_database, keras_model, target_model_size)
+                                                             label_database, keras_model, target_model_size, pooling)
         print_ranking(query_app_id, reference_app_id_counter)
