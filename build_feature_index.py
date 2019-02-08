@@ -96,51 +96,53 @@ def build_feature_index(verbose=False, save_keras_output=False):
             start = time()
 
         image_filename = app_id_to_image_filename(app_id)
-        img = cv.imread(image_filename, cv.IMREAD_COLOR)
 
         if Y_hat is not None:
             image = load_img(image_filename, target_size=target_model_size)
             yhat = label_image(image, model)  # runtime: 2 seconds
             Y_hat[counter, :] = yhat
-
-        # find the keypoints and descriptors with ORB
-        kp, des = orb.detectAndCompute(img, None)
-
-        current_des = np.array(des)
-        try:
-            current_img_id = np.zeros((des.shape[0], 1)) + counter
-        except AttributeError:
-            continue
-
-        if descriptor_database is None:
-            descriptor_database = current_des.copy()
-            descriptor_img_id = current_img_id.copy()
         else:
-            descriptor_database = np.vstack((descriptor_database, current_des))
-            descriptor_img_id = np.vstack((descriptor_img_id, current_img_id))
+            img = cv.imread(image_filename, cv.IMREAD_COLOR)
 
-        if verbose:
-            app_details = get_app_details(app_id)
-            app_name = app_details['name']
-            print('AppID = {} ({})'.format(app_id, app_name))
+            # find the keypoints and descriptors with ORB
+            kp, des = orb.detectAndCompute(img, None)
 
-            # draw only keypoints location,not size and orientation
-            # If the OpenCV build for Python is fixed:
-            # Reference: https://github.com/skvark/opencv-python/issues/168
-            # img2 = cv.drawKeypoints(img, kp, None, color=(0, 255, 0), flags=0)
-            # Otherwise:
-            img2 = img.copy()
-            for marker in kp:
-                img2 = cv.drawMarker(img2,
-                                     tuple(int(i) for i in marker.pt), color=(0, 255, 0), markerType=cv.MARKER_DIAMOND)
-            plt.imshow(img2)
-            plt.show()
+            current_des = np.array(des)
+            try:
+                current_img_id = np.zeros((des.shape[0], 1)) + counter
+            except AttributeError:
+                continue
 
-    np.save(get_descriptor_database_filename(), descriptor_database)
-    np.save(get_descriptor_img_id_filename(), descriptor_img_id)
+            if descriptor_database is None:
+                descriptor_database = current_des.copy()
+                descriptor_img_id = current_img_id.copy()
+            else:
+                descriptor_database = np.vstack((descriptor_database, current_des))
+                descriptor_img_id = np.vstack((descriptor_img_id, current_img_id))
+
+            if verbose:
+                app_details = get_app_details(app_id)
+                app_name = app_details['name']
+                print('AppID = {} ({})'.format(app_id, app_name))
+
+                # draw only keypoints location,not size and orientation
+                # If the OpenCV build for Python is fixed:
+                # Reference: https://github.com/skvark/opencv-python/issues/168
+                # img2 = cv.drawKeypoints(img, kp, None, color=(0, 255, 0), flags=0)
+                # Otherwise:
+                img2 = img.copy()
+                for marker in kp:
+                    img2 = cv.drawMarker(img2,
+                                         tuple(int(i) for i in marker.pt),
+                                         color=(0, 255, 0), markerType=cv.MARKER_DIAMOND)
+                plt.imshow(img2)
+                plt.show()
 
     if Y_hat is not None:
         np.save(get_label_database_filename(), Y_hat)
+    else:
+        np.save(get_descriptor_database_filename(), descriptor_database)
+        np.save(get_descriptor_img_id_filename(), descriptor_img_id)
 
     return
 
