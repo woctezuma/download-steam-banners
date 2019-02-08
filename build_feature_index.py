@@ -2,9 +2,9 @@ from time import time
 
 import cv2 as cv
 import numpy as np
-from keras.applications.nasnet import NASNetMobile
-from keras.applications.nasnet import decode_predictions
-from keras.applications.nasnet import preprocess_input
+from keras.applications.mobilenet import MobileNet
+from keras.applications.mobilenet import decode_predictions
+from keras.applications.mobilenet import preprocess_input
 from keras.preprocessing.image import img_to_array
 from keras.preprocessing.image import load_img
 from matplotlib import pyplot as plt
@@ -32,9 +32,9 @@ def load_keras_model(include_top=True):
     # The function argument allows to choose whether to include the last model layer for label prediction.
 
     if include_top:
-        model = NASNetMobile(include_top=include_top)
+        model = MobileNet(include_top=include_top)
     else:
-        model = NASNetMobile(include_top=include_top, pooling='avg')
+        model = MobileNet(include_top=include_top, pooling='avg')
     target_model_size = (224, 224)
 
     return model, target_model_size
