@@ -57,7 +57,7 @@ def label_image(image, model, verbose=False):
             # print the classification
             print('%s (%.2f%%)' % (label[1], label[2] * 100))
 
-    return labels
+    return yhat
 
 
 def build_feature_index(verbose=False):
