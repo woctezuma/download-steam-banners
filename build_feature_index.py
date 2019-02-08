@@ -2,6 +2,11 @@ from time import time
 
 import cv2 as cv
 import numpy as np
+from keras.applications.nasnet import NASNetMobile
+from keras.applications.nasnet import decode_predictions
+from keras.applications.nasnet import preprocess_input
+from keras.preprocessing.image import img_to_array
+from keras.preprocessing.image import load_img
 from matplotlib import pyplot as plt
 
 from build_search_index import list_app_ids, app_id_to_image_filename
@@ -18,6 +23,41 @@ def get_descriptor_img_id_filename():
     return descriptor_img_id_filename
 
 
+def load_keras_model():
+    model = NASNetMobile()
+    target_model_size = (224, 224)
+
+    return model, target_model_size
+
+
+def label_image(image, model, verbose=False):
+    # Reference: https://github.com/glouppe/blackbelt/
+
+    # convert the image pixels to a numpy array
+    image = img_to_array(image)
+
+    # reshape data for the model
+    image = np.expand_dims(image, axis=0)
+
+    # prepare the image for the VGG model
+    image = preprocess_input(image)
+
+    # predict the probability across all output classes
+    yhat = model.predict(image)
+
+    # convert the probabilities to class labels
+    labels = decode_predictions(yhat)
+
+    # retrieve the most likely result, e.g. highest probability
+    label = labels[0][0]
+
+    if verbose:
+        # print the classification
+        print('%s (%.2f%%)' % (label[1], label[2] * 100))
+
+    return labels
+
+
 def build_feature_index(verbose=False):
     # Reference: https://docs.opencv.org/4.0.1/dc/dc3/tutorial_py_matcher.html
 
@@ -29,6 +69,9 @@ def build_feature_index(verbose=False):
 
     # Initiate ORB detector
     orb = cv.ORB_create()
+
+    # Load the model
+    model, target_model_size = load_keras_model()
 
     descriptor_database = None
     descriptor_img_id = None
@@ -42,6 +85,9 @@ def build_feature_index(verbose=False):
 
         image_filename = app_id_to_image_filename(app_id)
         img = cv.imread(image_filename, cv.IMREAD_COLOR)
+
+        image = load_img(image_filename, target_size=target_model_size)
+        label_image(image, model)
 
         # find the keypoints and descriptors with ORB
         kp, des = orb.detectAndCompute(img, None)
