@@ -8,6 +8,15 @@
 
 This repository contains Python code to retrieve Steam games with similar store banners.
 
+## Requirements
+
+-   Install the latest version of [Python 3.X](https://www.python.org/downloads/). For CNTK, you will need Python 3.6.
+-   Install the required packages:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Usage
 
 First, download the app details with [`steam-api`](https://github.com/woctezuma/steam-api).
