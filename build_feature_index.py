@@ -23,8 +23,8 @@ def get_descriptor_img_id_filename():
     return descriptor_img_id_filename
 
 
-def load_keras_model():
-    model = NASNetMobile()
+def load_keras_model(include_top=True):
+    model = NASNetMobile(include_top=include_top)
     target_model_size = (224, 224)
 
     return model, target_model_size
@@ -48,12 +48,12 @@ def label_image(image, model, verbose=False):
     # convert the probabilities to class labels
     labels = decode_predictions(yhat)
 
-    # retrieve the most likely result, e.g. highest probability
-    label = labels[0][0]
+        # retrieve the most likely result, e.g. highest probability
+        label = labels[0][0]
 
-    if verbose:
-        # print the classification
-        print('%s (%.2f%%)' % (label[1], label[2] * 100))
+        if verbose:
+            # print the classification
+            print('%s (%.2f%%)' % (label[1], label[2] * 100))
 
     return labels
 
