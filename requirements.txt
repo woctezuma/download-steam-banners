@@ -5,4 +5,4 @@ imagehash==4.0
 matplotlib==3.0.2
 cntk==2.6
 keras
-pillow
+pillow==5.4.1
