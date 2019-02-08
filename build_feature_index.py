@@ -111,7 +111,7 @@ def build_feature_index(verbose=False, save_keras_output=False):
 
         if Y_hat is not None:
             image = load_img(image_filename, target_size=target_model_size)
-            yhat = label_image(image, model)  # runtime: 2 seconds
+            yhat = label_image(image, model)  # runtime: 1 second
             Y_hat[counter, :] = yhat.flatten()
         else:
             img = cv.imread(image_filename, cv.IMREAD_COLOR)
