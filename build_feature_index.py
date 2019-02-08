@@ -45,8 +45,10 @@ def label_image(image, model, verbose=False):
     # predict the probability across all output classes
     yhat = model.predict(image)
 
-    # convert the probabilities to class labels
-    labels = decode_predictions(yhat)
+    if model.output_names[0] == 'predictions':
+
+        # convert the probabilities to class labels
+        labels = decode_predictions(yhat)
 
         # retrieve the most likely result, e.g. highest probability
         label = labels[0][0]
