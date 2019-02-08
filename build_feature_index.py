@@ -8,11 +8,6 @@ from build_search_index import list_app_ids, app_id_to_image_filename
 from download_steam_banners import get_app_details
 
 
-def get_feature_index_filename():
-    feature_index_filename = 'feature_index.json'
-    return feature_index_filename
-
-
 def get_descriptor_database_filename():
     descriptor_database_filename = 'descriptor_database.npy'
     return descriptor_database_filename
