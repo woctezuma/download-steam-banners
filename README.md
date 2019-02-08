@@ -17,6 +17,12 @@ This repository contains Python code to retrieve Steam games with similar store 
 pip install -r requirements.txt
 ```
 
+NB: For Windows, you may find a more recent version of OpenCV in [this repository](https://www.lfd.uci.edu/~gohlke/pythonlibs/). Download it locally & install with:
+
+```bash
+pip install opencv_python-4.0.1-cp36-cp36m-win_amd64.whl
+```
+
 ## Usage
 
 First, download the app details with [`steam-api`](https://github.com/woctezuma/steam-api).
