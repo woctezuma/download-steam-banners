@@ -85,12 +85,21 @@ def build_feature_index(verbose=False, save_keras_output=False):
     Y_hat = None
 
     if save_keras_output:
-        # Assumption: the model includes the last layer for label prediction.
-        Y_hat = np.zeros((num_games, model.output_shape[1]))
+        try:
+            Y_hat = np.load(get_label_database_filename())
+        except FileNotFoundError:
+            # Assumption: the model includes the last layer for label prediction.
+            Y_hat = np.zeros((num_games, model.output_shape[1]))
 
     for (counter, app_id) in enumerate(app_ids):
 
-        if (counter % 1000) == 0:
+        if Y_hat is not None and any(Y_hat[counter, :] != 0):
+            # Avoid re-computing values of Y_hat which were previously computed and saved to disk, then recently loaded
+            continue
+
+        if (counter % 300) == 0:
+            if Y_hat is not None:
+                np.save(get_label_database_filename(), Y_hat)
             print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
             print('Elapsed time: {:.2f} s'.format(time() - start))
             start = time()
@@ -148,4 +157,4 @@ def build_feature_index(verbose=False, save_keras_output=False):
 
 
 if __name__ == '__main__':
-    build_feature_index(verbose=False)
+    build_feature_index(verbose=False, save_keras_output=True)
