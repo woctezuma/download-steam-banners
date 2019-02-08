@@ -115,6 +115,13 @@ def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed
     return
 
 
+def normalized(a, axis=-1, order=2):
+    # Reference: https://stackoverflow.com/a/21032099
+    l2 = np.atleast_1d(np.linalg.norm(a, order, axis))
+    l2[l2 == 0] = 1
+    return a / np.expand_dims(l2, axis)
+
+
 if __name__ == '__main__':
     descriptor_database = np.load(get_descriptor_database_filename())
     descriptor_img_id = np.load(get_descriptor_img_id_filename())
