@@ -19,6 +19,13 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     if keras_model is not None:
         image = load_img(image_filename, target_size=target_model_size)
         query_des = label_image(image, keras_model)  # runtime: 1 second
+
+        # For FLANN, the query and the database should have the same dtype 'float32'.
+        query_des = query_des.astype('float32')
+
+        # FLANN parameters
+        FLANN_INDEX_KDTREE = 1
+        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
     else:
         query_img = cv.imread(image_filename, cv.IMREAD_COLOR)
 
@@ -28,12 +35,13 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         # find the keypoints and descriptors with ORB
         _, query_des = orb.detectAndCompute(query_img, None)
 
-    # FLANN parameters
-    FLANN_INDEX_LSH = 6
-    index_params = dict(algorithm=FLANN_INDEX_LSH,
-                        table_number=6,  # 12
-                        key_size=12,  # 20
-                        multi_probe_level=1)  # 2
+        # FLANN parameters
+        FLANN_INDEX_LSH = 6
+        index_params = dict(algorithm=FLANN_INDEX_LSH,
+                            table_number=6,  # 12
+                            key_size=12,  # 20
+                            multi_probe_level=1)  # 2
+
     search_params = dict(checks=50)  # or pass empty dictionary
 
     flann = cv.FlannBasedMatcher(index_params, search_params)
@@ -53,6 +61,9 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         row_no = app_ids.index(query_app_id)
         trimmed_descriptor_database = label_database.copy()
         trimmed_descriptor_database[row_no, :] = 0
+
+        # For FLANN, the query and the database should have the same dtype 'float32'.
+        trimmed_descriptor_database = trimmed_descriptor_database.astype('float32')
 
         num_neighbors = 10
     else:
