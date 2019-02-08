@@ -116,23 +116,25 @@ def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed
 
 
 if __name__ == '__main__':
-    pooling = 'avg'  # 'avg' or 'max'
-
     descriptor_database = np.load(get_descriptor_database_filename())
     descriptor_img_id = np.load(get_descriptor_img_id_filename())
-    label_database = np.load(get_label_database_filename(pooling))
 
     query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
 
     use_keras_features = True
 
-    if use_keras_features:
-        keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
-    else:
-        keras_model = None
-        target_model_size = None
+    for pooling in ['max', 'avg']:  # 'avg' or 'max'
+        print('\n[pooling] {}'.format(pooling))
+        label_database = np.load(get_label_database_filename(pooling))
 
-    for query_app_id in query_app_ids:
-        reference_app_id_counter = retrieve_similar_features(query_app_id, descriptor_database, descriptor_img_id,
-                                                             label_database, keras_model, target_model_size, pooling)
-        print_ranking(query_app_id, reference_app_id_counter)
+        if use_keras_features:
+            keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
+        else:
+            keras_model = None
+            target_model_size = None
+
+        for query_app_id in query_app_ids:
+            reference_app_id_counter = retrieve_similar_features(query_app_id, descriptor_database, descriptor_img_id,
+                                                                 label_database, keras_model, target_model_size,
+                                                                 pooling)
+            print_ranking(query_app_id, reference_app_id_counter)
