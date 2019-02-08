@@ -4,5 +4,5 @@ opencv-contrib-python==4.0.0.21
 imagehash==4.0
 matplotlib==3.0.2
 cntk==2.6
-keras
+keras==2.2.4
 pillow
