@@ -111,6 +111,10 @@ def build_feature_index(verbose=False):
             print('AppID = {} ({})'.format(app_id, app_name))
 
             # draw only keypoints location,not size and orientation
+            # If the OpenCV build for Python is fixed:
+            # Reference: https://github.com/skvark/opencv-python/issues/168
+            # img2 = cv.drawKeypoints(img, kp, None, color=(0, 255, 0), flags=0)
+            # Otherwise:
             img2 = img.copy()
             for marker in kp:
                 img2 = cv.drawMarker(img2,
