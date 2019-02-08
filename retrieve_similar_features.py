@@ -79,7 +79,8 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     print('Elapsed time: {:.2f} s'.format(time() - start))
 
     if keras_model is not None:
-        reference_app_id_counter = [app_ids[element] for element in matches]
+        # When we use the Keras model, a Steam banner is represented by only ONE feature, hence the use of 'matches[0]'.
+        reference_app_id_counter = [app_ids[element.trainIdx] for element in matches[0]]
     else:
         # store all the good matches as per Lowe's ratio test.
         good_matches = []
