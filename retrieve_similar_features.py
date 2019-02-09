@@ -164,7 +164,8 @@ if __name__ == '__main__':
                 knn = NearestNeighbors(metric='cosine', algorithm='brute')
                 knn.fit(label_database)
             else:
-                knn = None
+                knn = NearestNeighbors(algorithm='brute')
+                knn.fit(label_database)
         else:
             keras_model = None
             target_model_size = None
