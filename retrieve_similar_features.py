@@ -4,6 +4,7 @@ from time import time
 import cv2 as cv
 import numpy as np
 from keras.preprocessing.image import load_img
+from sklearn.neighbors import NearestNeighbors
 
 from build_feature_index import get_descriptor_database_filename, get_descriptor_img_id_filename
 from build_feature_index import get_label_database_filename, load_keras_model, label_image
@@ -13,7 +14,7 @@ from retrieve_similar_banners import get_store_url
 
 
 def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor_img_id=None,
-                              label_database=None, keras_model=None, target_model_size=None, pooling=None):
+                              label_database=None, keras_model=None, target_model_size=None, pooling=None, knn=None):
     image_filename = app_id_to_image_filename(query_app_id)
 
     if keras_model is not None:
@@ -79,12 +80,22 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         num_neighbors = 2
 
     start = time()
-    matches = flann.knnMatch(query_des, trimmed_descriptor_database, k=num_neighbors)
+    if knn is None:
+        # FLANN with L2 distance
+        matches = flann.knnMatch(query_des, trimmed_descriptor_database, k=num_neighbors)
+    else:
+        # Sci-Kit Learn with cosine similarity
+        _, matches = knn.kneighbors(query_des, n_neighbors=num_neighbors)
     print('Elapsed time: {:.2f} s'.format(time() - start))
 
     if keras_model is not None:
         # When we use the Keras model, a Steam banner is represented by only ONE feature, hence the use of 'matches[0]'.
-        reference_app_id_counter = [app_ids[element.trainIdx] for element in matches[0]]
+        try:
+            # FLANN
+            reference_app_id_counter = [app_ids[element.trainIdx] for element in matches[0]]
+        except AttributeError:
+            # Sci-Kit Learn
+            reference_app_id_counter = [app_ids[element] for element in matches[0]]
     else:
         # store all the good matches as per Lowe's ratio test.
         good_matches = []
@@ -133,6 +144,7 @@ if __name__ == '__main__':
     query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
 
     use_keras_features = True
+    use_cosine_similarity = True
 
     for pooling in ['max', 'avg']:  # 'avg' or 'max'
         print('\n[pooling] {}'.format(pooling))
@@ -140,12 +152,19 @@ if __name__ == '__main__':
 
         if use_keras_features:
             keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
+
+            if use_cosine_similarity:
+                knn = NearestNeighbors(metric='cosine', algorithm='brute')
+                knn.fit(label_database)
+            else:
+                knn = None
         else:
             keras_model = None
             target_model_size = None
+            knn = None
 
         for query_app_id in query_app_ids:
             reference_app_id_counter = retrieve_similar_features(query_app_id, descriptor_database, descriptor_img_id,
                                                                  label_database, keras_model, target_model_size,
-                                                                 pooling)
+                                                                 pooling, knn)
             print_ranking(query_app_id, reference_app_id_counter)
