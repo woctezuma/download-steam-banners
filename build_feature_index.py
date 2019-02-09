@@ -108,7 +108,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
             # Avoid re-computing values of Y_hat which were previously computed and saved to disk, then recently loaded
             continue
 
-        if (counter % 300) == 0:
+        if (counter % 1200) == 0:
             if Y_hat is not None:
                 np.save(get_label_database_filename(pooling), Y_hat)
             print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
