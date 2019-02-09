@@ -36,10 +36,13 @@ def get_label_database_filename(pooling=None):
 def load_keras_model(include_top=True, pooling='avg'):
     # The function argument allows to choose whether to include the last model layer for label prediction.
 
+    # Reference: https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet.py
+    alpha_value = 0.25
+
     if include_top:
-        model = MobileNet(include_top=include_top)
+        model = MobileNet(include_top=include_top, alpha=alpha_value)
     else:
-        model = MobileNet(include_top=include_top, pooling=pooling)
+        model = MobileNet(include_top=include_top, pooling=pooling, alpha=alpha_value)
     target_model_size = (224, 224)
 
     return model, target_model_size
