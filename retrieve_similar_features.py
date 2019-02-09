@@ -148,9 +148,12 @@ if __name__ == '__main__':
     use_keras_features = True
     use_cosine_similarity = True
 
-    for pooling in ['max', 'avg']:  # 'avg' or 'max'
+    for pooling in [None, 'max', 'avg']:  # None or 'avg' or 'max'
         print('\n[pooling] {}'.format(pooling))
-        label_database = np.load(get_label_database_filename(pooling))
+        try:
+            label_database = np.load(get_label_database_filename(pooling))
+        except FileNotFoundError:
+            continue
 
         if use_keras_features:
             keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)

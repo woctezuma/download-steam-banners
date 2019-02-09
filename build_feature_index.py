@@ -172,5 +172,5 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
 
 
 if __name__ == '__main__':
-    pooling = 'avg'  # 'avg' or 'max'
+    pooling = None  # None or 'avg' or 'max'
     build_feature_index(verbose=False, save_keras_output=True, include_top=False, pooling=pooling)
