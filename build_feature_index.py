@@ -80,7 +80,7 @@ def label_image(image, model, verbose=False):
     return yhat
 
 
-def build_feature_index(verbose=False, save_keras_output=False, include_top=True, pooling='avg'):
+def build_feature_index(verbose=False, save_keras_output=False, include_top=True, pooling=None):
     # Reference: https://docs.opencv.org/4.0.1/dc/dc3/tutorial_py_matcher.html
 
     app_ids = list_app_ids()
