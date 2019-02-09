@@ -104,7 +104,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
             Y_hat = np.load(get_label_database_filename(pooling))
         except FileNotFoundError:
             # Assumption: the model includes the last layer for label prediction.
-            Y_hat = np.zeros((num_games, model.output_shape[1]))
+            Y_hat = np.zeros((num_games, np.product(model.output_shape[1:])))
 
     for (counter, app_id) in enumerate(app_ids):
 
