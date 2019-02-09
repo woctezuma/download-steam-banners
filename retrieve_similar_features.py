@@ -119,7 +119,7 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     return reference_app_id_counter
 
 
-def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed=10):
+def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed=10, only_print_banners=False):
     app_details = get_app_details(query_app_id)
     app_name = app_details['name']
     print('\nQuery appID: {} ({} @ {})'.format(query_app_id, app_name, get_store_url(query_app_id)))
@@ -127,7 +127,11 @@ def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed
     for rank, app_id in enumerate(reference_app_id_counter):
         app_details = get_app_details(app_id)
         app_name = app_details['name']
-        print('{}) app: {} ({} @ {})'.format(rank + 1, app_id, app_name, get_store_url(app_id)))
+        if only_print_banners:
+            banner_url = app_details['header_image']
+            print('[url={}][img]{}[/img][/url]'.format(get_store_url(app_id), banner_url))
+        else:
+            print('{}) app: {} ({} @ {})'.format(rank + 1, app_id, app_name, get_store_url(app_id)))
 
         if rank >= (num_elements_displayed - 1):
             break
@@ -149,6 +153,7 @@ if __name__ == '__main__':
 
     use_keras_features = True
     use_cosine_similarity = True
+    print_banners = True
 
     for pooling in [None, 'max', 'avg']:  # None or 'avg' or 'max'
         print('\n[pooling] {}'.format(pooling))
@@ -175,4 +180,4 @@ if __name__ == '__main__':
             reference_app_id_counter = retrieve_similar_features(query_app_id, descriptor_database, descriptor_img_id,
                                                                  label_database, keras_model, target_model_size,
                                                                  pooling, knn)
-            print_ranking(query_app_id, reference_app_id_counter)
+            print_ranking(query_app_id, reference_app_id_counter, only_print_banners=print_banners)
