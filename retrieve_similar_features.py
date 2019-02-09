@@ -21,6 +21,8 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         image = load_img(image_filename, target_size=target_model_size)
         query_des = label_image(image, keras_model)  # runtime: 1 second
 
+        query_des = query_des.flatten()
+
         # For FLANN, the query and the database should have the same dtype 'float32'.
         query_des = query_des.astype('float32')
 
@@ -86,8 +88,8 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         # FLANN with L2 distance
         matches = flann.knnMatch(query_des, trimmed_descriptor_database, k=num_neighbors)
     else:
-        # Sci-Kit Learn with cosine similarity
-        _, matches = knn.kneighbors(query_des, n_neighbors=num_neighbors)
+        # Sci-Kit Learn with cosine similarity. Reshape data as it contains a single sample.
+        _, matches = knn.kneighbors(query_des.reshape(1, -1), n_neighbors=num_neighbors)
     print('Elapsed time: {:.2f} s'.format(time() - start))
 
     if keras_model is not None:
