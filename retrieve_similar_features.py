@@ -62,7 +62,9 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         row_no = app_ids.index(query_app_id)
         trimmed_descriptor_database = label_database.copy()
         # Trimming the database is optional here.
-        trimmed_descriptor_database[row_no, :] = 0
+        optional_trimming = False
+        if optional_trimming:
+            trimmed_descriptor_database[row_no, :] = 0
 
         # For FLANN, the query and the database should have the same dtype 'float32'.
         trimmed_descriptor_database = trimmed_descriptor_database.astype('float32')
