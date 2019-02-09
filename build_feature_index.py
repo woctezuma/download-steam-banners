@@ -43,7 +43,7 @@ def load_keras_model(include_top=True, pooling='avg'):
         model = MobileNet(include_top=include_top, alpha=alpha_value)
     else:
         model = MobileNet(include_top=include_top, pooling=pooling, alpha=alpha_value)
-    target_model_size = (224, 224)
+    target_model_size = (128, 128)
 
     return model, target_model_size
 
