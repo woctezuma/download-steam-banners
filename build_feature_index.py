@@ -38,12 +38,16 @@ def load_keras_model(include_top=True, pooling='avg'):
 
     # Reference: https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet.py
     alpha_value = 0.25
+    target_model_size = (128, 128)
+
+    num_channels = 3
+    # Image data format: channels last
+    input_shape = tuple(list(target_model_size) + [num_channels])
 
     if include_top:
-        model = MobileNet(include_top=include_top, alpha=alpha_value)
+        model = MobileNet(include_top=include_top, alpha=alpha_value, input_shape=input_shape)
     else:
-        model = MobileNet(include_top=include_top, pooling=pooling, alpha=alpha_value)
-    target_model_size = (128, 128)
+        model = MobileNet(include_top=include_top, pooling=pooling, alpha=alpha_value, input_shape=input_shape)
 
     return model, target_model_size
 
