@@ -41,6 +41,33 @@ def get_label_database_filename(pooling=None):
     return label_database_filename
 
 
+def convert_label_database(target_pooling=None):
+    # Convert from a database of features obtained with:
+    # - 'include_top' set to False
+    # - and 'pooling' set to None
+    # to the database of features which would have been obtained with:
+    # - 'include_top' set to False
+    # - and 'pooling' set to 'max' or to 'avg'
+
+    X = np.load(get_label_database_filename(pooling=None))
+
+    # Feature shape before flattening
+    original_feature_shape = [4, 4, 256]  # Caveat: hard-coded for MobileNet with alpha=0.25 and input_shape=(128,128,3)
+
+    if target_pooling == 'max':
+        X_target = np.zeros((X.shape[0], original_feature_shape[-1]))
+        for (row, x) in enumerate(X):
+            X_target[row, :] = np.max(x.reshape(original_feature_shape), axis=(0, 1))
+    elif target_pooling == 'avg':
+        X_target = np.zeros((X.shape[0], original_feature_shape[-1]))
+        for (row, x) in enumerate(X):
+            X_target[row, :] = np.mean(x.reshape(original_feature_shape), axis=(0, 1))
+    else:
+        X_target = X
+
+    return X_target
+
+
 def load_keras_model(include_top=True, pooling='avg'):
     # The function argument allows to choose whether to include the last model layer for label prediction.
 
