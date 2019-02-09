@@ -1,3 +1,4 @@
+import pathlib
 from time import time
 
 import cv2 as cv
@@ -13,13 +14,20 @@ from build_search_index import list_app_ids, app_id_to_image_filename
 from download_steam_banners import get_app_details
 
 
+def get_features_folder_name():
+    features_folder_name = 'features/'
+    # Reference of the following line: https://stackoverflow.com/a/14364249
+    pathlib.Path(features_folder_name).mkdir(exist_ok=True)
+    return features_folder_name
+
+
 def get_descriptor_database_filename():
-    descriptor_database_filename = 'descriptor_database.npy'
+    descriptor_database_filename = get_features_folder_name() + 'descriptor_database.npy'
     return descriptor_database_filename
 
 
 def get_descriptor_img_id_filename():
-    descriptor_img_id_filename = 'descriptor_img_id.npy'
+    descriptor_img_id_filename = get_features_folder_name() + 'descriptor_img_id.npy'
     return descriptor_img_id_filename
 
 
@@ -29,7 +37,7 @@ def get_label_database_filename(pooling=None):
     else:
         pooling_str = '.' + pooling
 
-    label_database_filename = 'label_database' + pooling_str + '.npy'
+    label_database_filename = get_features_folder_name() + 'label_database' + pooling_str + '.npy'
     return label_database_filename
 
 
