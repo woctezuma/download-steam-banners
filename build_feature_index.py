@@ -41,6 +41,26 @@ def get_label_database_filename(pooling=None):
     return label_database_filename
 
 
+def get_frozen_app_ids_filename():
+    frozen_app_ids_filename = get_features_folder_name() + 'frozen_app_ids.txt'
+    return frozen_app_ids_filename
+
+
+def get_frozen_app_ids():
+    with open(get_frozen_app_ids_filename(), 'r') as f:
+        frozen_app_ids = [int(app_id) for app_id in f.readlines()]
+
+    return frozen_app_ids
+
+
+def freeze_app_ids(app_ids):
+    with open(get_frozen_app_ids_filename(), 'w') as f:
+        for app_id in app_ids:
+            f.write(str(app_id) + '\n')
+
+    return
+
+
 def convert_label_database(target_pooling=None):
     # Convert from a database of features obtained with:
     # - 'include_top' set to False
@@ -133,23 +153,40 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
     descriptor_database = None
     descriptor_img_id = None
     Y_hat = None
+    frozen_Y_hat = None
+    frozen_app_ids = None
 
     if save_keras_output:
+        Y_hat = np.zeros((num_games, np.product(model.output_shape[1:])))
+
         try:
-            Y_hat = np.load(get_label_database_filename(pooling))
+            frozen_Y_hat = np.load(get_label_database_filename(pooling))
         except FileNotFoundError:
-            # Assumption: the model includes the last layer for label prediction.
-            Y_hat = np.zeros((num_games, np.product(model.output_shape[1:])))
+            frozen_Y_hat = None
+
+        try:
+            frozen_app_ids = get_frozen_app_ids()
+        except FileNotFoundError:
+            frozen_app_ids = None
 
     for (counter, app_id) in enumerate(app_ids):
 
-        if Y_hat is not None and any(Y_hat[counter, :] != 0):
+        if frozen_Y_hat is not None and frozen_app_ids is not None:
             # Avoid re-computing values of Y_hat which were previously computed and saved to disk, then recently loaded
-            continue
+            try:
+                frozen_counter = frozen_app_ids.index(app_id)
+
+                if any(frozen_Y_hat[frozen_counter, :] != 0):
+                    Y_hat[counter, :] = frozen_Y_hat[frozen_counter, :]
+                    continue
+
+            except KeyError:
+                pass
 
         if (counter % 1200) == 0:
             if Y_hat is not None:
                 np.save(get_label_database_filename(pooling), Y_hat)
+                freeze_app_ids(app_ids)
             print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
             print('Elapsed time: {:.2f} s'.format(time() - start))
             start = time()
@@ -199,6 +236,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
 
     if Y_hat is not None:
         np.save(get_label_database_filename(pooling), Y_hat)
+        freeze_app_ids(app_ids)
     else:
         np.save(get_descriptor_database_filename(), descriptor_database)
         np.save(get_descriptor_img_id_filename(), descriptor_img_id)

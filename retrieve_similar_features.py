@@ -7,7 +7,7 @@ from keras.preprocessing.image import load_img
 from sklearn.neighbors import NearestNeighbors
 
 from build_feature_index import get_descriptor_database_filename, get_descriptor_img_id_filename
-from build_feature_index import get_label_database_filename, load_keras_model, label_image
+from build_feature_index import get_label_database_filename, load_keras_model, label_image, get_frozen_app_ids
 from build_search_index import app_id_to_image_filename, list_app_ids
 from download_steam_banners import get_app_details
 from retrieve_similar_banners import get_store_url
@@ -58,7 +58,12 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     if label_database is None:
         label_database = np.load(get_label_database_filename(pooling))
 
-    app_ids = list_app_ids()
+    try:
+        app_ids = get_frozen_app_ids()
+
+    except FileNotFoundError:
+        print('Assumption: no new banner was downloaded since the last feature pre-computation.')
+        app_ids = list_app_ids()
 
     if keras_model is not None:
         row_no = app_ids.index(query_app_id)
