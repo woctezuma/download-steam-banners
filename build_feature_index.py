@@ -180,7 +180,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
                     Y_hat[counter, :] = frozen_Y_hat[frozen_counter, :]
                     continue
 
-            except KeyError:
+            except ValueError:
                 pass
 
         if (counter % 1200) == 0:
