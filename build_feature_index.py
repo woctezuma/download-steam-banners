@@ -48,7 +48,7 @@ def get_frozen_app_ids_filename():
 
 def get_frozen_app_ids():
     with open(get_frozen_app_ids_filename(), 'r') as f:
-        frozen_app_ids = [int(app_id) for app_id in f.readlines()]
+        frozen_app_ids = [app_id.strip() for app_id in f.readlines()]
 
     return frozen_app_ids
 
