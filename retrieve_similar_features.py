@@ -3,6 +3,7 @@ from time import time
 
 import cv2 as cv
 import numpy as np
+import steamspypi
 from keras.preprocessing.image import load_img
 from sklearn.neighbors import NearestNeighbors
 
@@ -49,14 +50,16 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
 
     flann = cv.FlannBasedMatcher(index_params, search_params)
 
-    if descriptor_database is None:
-        descriptor_database = np.load(get_descriptor_database_filename())
+    if keras_model is not None:
+        if label_database is None:
+            label_database = np.load(get_label_database_filename(pooling))
 
-    if descriptor_img_id is None:
-        descriptor_img_id = np.load(get_descriptor_img_id_filename())
+    else:
+        if descriptor_database is None:
+            descriptor_database = np.load(get_descriptor_database_filename())
 
-    if label_database is None:
-        label_database = np.load(get_label_database_filename(pooling))
+        if descriptor_img_id is None:
+            descriptor_img_id = np.load(get_descriptor_img_id_filename())
 
     try:
         app_ids = get_frozen_app_ids()
@@ -124,18 +127,43 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     return reference_app_id_counter
 
 
-def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed=10, only_print_banners=False):
+def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed=10, only_print_banners=False,
+                  use_markdown_syntax=True):
     app_details = get_app_details(query_app_id)
     app_name = app_details['name']
-    print('\nQuery appID: {} ({} @ {})'.format(query_app_id, app_name, get_store_url(query_app_id)))
+
+    if use_markdown_syntax:
+        # Markdown
+        print('\nQuery appID: {} ([{}]({}))\n'.format(query_app_id, app_name, get_store_url(query_app_id)))
+    else:
+        # BBCode
+        print('\nQuery appID: {} ([url={}]{}[/url])\n'.format(query_app_id, get_store_url(query_app_id), app_name))
 
     for rank, app_id in enumerate(reference_app_id_counter):
         app_details = get_app_details(app_id)
         app_name = app_details['name']
         if only_print_banners:
             banner_url = app_details['header_image']
-            print('[url={}][img]{}[/img][/url]'.format(get_store_url(app_id), banner_url))
+
+            image_width = 150
+            max_num_banners_per_row = 5  # only used with BBCode for now
+
+            if use_markdown_syntax:
+                # Markdown
+                # Reference: https://stackoverflow.com/a/14747656
+                image_link_str = '[<img alt="{}" src="{}" width="{}">]({})'
+                print(image_link_str.format(app_name, banner_url, image_width, get_store_url(app_id)))
+            else:
+                # BBCode
+                image_link_str = '[url={}][img="width:{}px;"]{}[/img][/url]'
+                print(image_link_str.format(get_store_url(app_id), image_width, banner_url),
+                      end='')
+                # Line break every 5 lines
+                if (rank + 1) % max_num_banners_per_row == 0:
+                    print()
+
         else:
+            # No banner, so that this is easier to read in Python console.
             print('{}) app: {} ({} @ {})'.format(rank + 1, app_id, app_name, get_store_url(app_id)))
 
         if rank >= (num_elements_displayed - 1):
@@ -150,39 +178,81 @@ def normalized(a, axis=-1, order=2):
     return a / np.expand_dims(l2, axis)
 
 
-if __name__ == '__main__':
-    descriptor_database = np.load(get_descriptor_database_filename())
-    descriptor_img_id = np.load(get_descriptor_img_id_filename())
+def get_top_100_app_ids():
+    data_request = dict()
+    data_request['request'] = 'top100in2weeks'
 
-    query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
+    data = steamspypi.download(data_request)
 
-    use_keras_features = True
-    use_cosine_similarity = True
-    print_banners = True
+    top_100_app_ids = list(data.keys())
 
-    for pooling in [None, 'max', 'avg']:  # None or 'avg' or 'max'
-        print('\n[pooling] {}'.format(pooling))
+    return top_100_app_ids
+
+
+def batch_retrieve_similar_features(query_app_ids=None,
+                                    use_keras_features=True,
+                                    use_cosine_similarity=True,
+                                    print_banners=True,
+                                    use_markdown_syntax=True,
+                                    pooling=None):
+    if query_app_ids is None:
+        query_app_ids = get_top_100_app_ids()
+
+    descriptor_database = None
+    descriptor_img_id = None
+    label_database = None
+
+    feature_database_exists = True
+
+    if use_keras_features:
         try:
+            print('\n[pooling] {}'.format(pooling))
             label_database = np.load(get_label_database_filename(pooling))
         except FileNotFoundError:
-            continue
+            feature_database_exists = False
 
-        if use_keras_features:
-            keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
+        keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
 
-            if use_cosine_similarity:
-                knn = NearestNeighbors(metric='cosine', algorithm='brute')
-                knn.fit(label_database)
-            else:
-                knn = NearestNeighbors(algorithm='brute')
-                knn.fit(label_database)
+        if use_cosine_similarity:
+            knn = NearestNeighbors(metric='cosine', algorithm='brute')
+            knn.fit(label_database)
         else:
-            keras_model = None
-            target_model_size = None
-            knn = None
+            knn = NearestNeighbors(algorithm='brute')
+            knn.fit(label_database)
+    else:
+        try:
+            descriptor_database = np.load(get_descriptor_database_filename())
+            descriptor_img_id = np.load(get_descriptor_img_id_filename())
+        except FileNotFoundError:
+            feature_database_exists = False
 
+        keras_model = None
+        target_model_size = None
+        knn = None
+
+    if feature_database_exists:
         for query_app_id in query_app_ids:
             reference_app_id_counter = retrieve_similar_features(query_app_id, descriptor_database, descriptor_img_id,
                                                                  label_database, keras_model, target_model_size,
                                                                  pooling, knn)
-            print_ranking(query_app_id, reference_app_id_counter, only_print_banners=print_banners)
+            print_ranking(query_app_id, reference_app_id_counter, only_print_banners=print_banners,
+                          use_markdown_syntax=use_markdown_syntax)
+
+    return
+
+
+if __name__ == '__main__':
+    query_app_ids = ['620']  # , '364470', '504230', '583950', '646570', '863550', '794600']
+
+    use_keras_features = True
+    use_cosine_similarity = True
+    print_banners = True
+    use_markdown_syntax = False
+
+    for pooling in [None]:  # , 'max', 'avg']:  # None or 'avg' or 'max'
+        batch_retrieve_similar_features(query_app_ids,
+                                        use_keras_features,
+                                        use_cosine_similarity,
+                                        print_banners,
+                                        use_markdown_syntax,
+                                        pooling)
