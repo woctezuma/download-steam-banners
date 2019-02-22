@@ -33,6 +33,12 @@ Finally, retrieve Steam games with similar store banners:
 -   either based on [hashes](https://github.com/JohannesBuchner/imagehash) with `build_search_index.py` and `retrieve_similar_banners.py`,
 -   or based on image features ([ORB descriptors](https://docs.opencv.org/master/dc/dc3/tutorial_py_matcher.html) or features from [a neural net](https://keras.io/applications/#models-for-image-classification-with-weights-trained-on-imagenet)) with `build_feature_index.py` and `retrieve_similar_features.py`.
 
+## References
+
+-   [Zhang, Richard, et al. "The unreasonable effectiveness of deep features as a perceptual metric." Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2018.](https://github.com/richzhang/PerceptualSimilarity)
+-   [Image hashes](https://github.com/JohannesBuchner/imagehash)
+-   [Another Github repository about image similarity](https://github.com/ankonzoid/artificio)
+
 <!-- Definitions -->
 
 [build]: <https://travis-ci.org/woctezuma/download-steam-banners>
