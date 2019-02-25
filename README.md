@@ -29,8 +29,14 @@ pip install opencv_python-4.0.1-cp36-cp36m-win_amd64.whl
 
 There are 3 possibilities to download the Steam store banners of every Steam game:
 1.   If you have already downloaded the app details with [`steam-api`](https://github.com/woctezuma/steam-api), then you could run `download_steam_banners.py`.
-2.   (recommended) Run [this IPython notebook](https://github.com/woctezuma/google-colab/blob/master/download_steam_banners.ipynb) which does not require to download app details: the URLs for Steam banners are similarly formatted and can be inferred from the appID alone.
+2.   Run [this IPython notebook](https://github.com/woctezuma/google-colab/blob/master/download_steam_banners.ipynb) which does not require to download app details: the URLs for Steam banners are similarly formatted and can be inferred from the appID alone.
 3.   Download a data snapshot [`128x128.zip`](https://github.com/woctezuma/google-colab/tree/master/data) from early February 2019, consisting of 31,723 Steam banners, resized to 128x128 resolution and saved as .jpg files with RGB channels.
+
+Method 1 is the most exhaustive option: all the appIDs are listed via Steam API, and app details allow to check whether an appID matches a game, a DLC, a video, etc.
+
+Method 2 is a nice trade-off: appIDs are listed via SteamSpy API, and they all match games. However, SteamSpy omits a few games based on their tags, etc.
+
+Method 3 is the fastest option: you get a snapshot of downsampled banners.
 
 ### Find games with similar Steam banners
 
