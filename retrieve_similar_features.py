@@ -1,6 +1,10 @@
+import asyncio
 from collections import Counter
+from pathlib import Path
 from time import time
 
+import aiofiles
+import aiohttp
 import cv2 as cv
 import numpy as np
 import steamspypi
@@ -14,11 +18,35 @@ from download_steam_banners import get_app_details
 from retrieve_similar_banners import get_store_url
 
 
+async def download_steam_banner_again(app_id, banner_file_name):
+    async with aiohttp.ClientSession() as session:
+        if not Path(banner_file_name).exists():
+            banner_url = 'https://steamcdn-a.akamaihd.net/steam/apps/' + str(app_id) + '/header.jpg'
+
+            # Reference: https://stackoverflow.com/a/51745925
+            async with session.get(banner_url) as resp:
+                if resp.status == 200:
+                    f = await aiofiles.open(banner_file_name, mode='wb')
+                    await f.write(await resp.read())
+                    await f.close()
+                    print('Banner downloaded to {} for appID {}.'.format(banner_file_name, app_id))
+                else:
+                    print('Banner for appID {} could not be downloaded.'.format(app_id))
+
+    return
+
+
 def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor_img_id=None,
                               label_database=None, keras_model=None, target_model_size=None, pooling=None, knn=None):
     image_filename = app_id_to_image_filename(query_app_id)
 
     if keras_model is not None:
+
+        if not Path(image_filename).exists():
+            print('File {} not found: appID {} likely unavailable in this region.'.format(image_filename, query_app_id))
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(download_steam_banner_again(query_app_id, image_filename))
+
         image = load_img(image_filename, target_size=target_model_size)
         query_des = label_image(image, keras_model)  # runtime: 1 second
 
@@ -69,12 +97,18 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         app_ids = list_app_ids()
 
     if keras_model is not None:
-        row_no = app_ids.index(query_app_id)
         trimmed_descriptor_database = label_database.copy()
         # Trimming the database is optional here.
         optional_trimming = False
         if optional_trimming:
-            trimmed_descriptor_database[row_no, :] = 0
+            try:
+                row_no = app_ids.index(query_app_id)
+            except ValueError:
+                print('AppID {} not part of frozen appIDs: it is likely unavailable in my region.'.format(query_app_id))
+                row_no = None
+
+            if row_no is not None:
+                trimmed_descriptor_database[row_no, :] = 0
 
         # For FLANN, the query and the database should have the same dtype 'float32'.
         trimmed_descriptor_database = trimmed_descriptor_database.astype('float32')
@@ -129,8 +163,16 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
 
 def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed=10, only_print_banners=False,
                   use_markdown_syntax=True):
-    app_details = get_app_details(query_app_id)
-    app_name = app_details['name']
+    try:
+        app_details = get_app_details(query_app_id)
+    except FileNotFoundError:
+        print('App details for appID {} not found: appID is likely unavailable in this region'.format(query_app_id))
+        app_details = None
+
+    if app_details is not None:
+        app_name = app_details['name']
+    else:
+        app_name = 'Unknown'
 
     if use_markdown_syntax:
         # Markdown
