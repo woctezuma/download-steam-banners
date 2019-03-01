@@ -294,7 +294,7 @@ if __name__ == '__main__':
     use_keras_features = True
     use_cosine_similarity = True
     print_banners = True
-    use_markdown_syntax = False
+    use_markdown_syntax = True
 
     for pooling in [None]:  # , 'max', 'avg']:  # None or 'avg' or 'max'
         batch_retrieve_similar_features(query_app_ids,
