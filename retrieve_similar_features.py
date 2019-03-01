@@ -11,7 +11,7 @@ import steamspypi
 from keras.preprocessing.image import load_img
 from sklearn.neighbors import NearestNeighbors
 
-from build_feature_index import get_descriptor_database_filename, get_descriptor_img_id_filename
+from build_feature_index import get_descriptor_database_filename, get_descriptor_img_id_filename, convert_label_database
 from build_feature_index import get_label_database_filename, load_keras_model, label_image, get_frozen_app_ids
 from build_search_index import app_id_to_image_filename, list_app_ids
 from download_steam_banners import get_app_details
@@ -80,7 +80,10 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
 
     if keras_model is not None:
         if label_database is None:
-            label_database = np.load(get_label_database_filename(pooling))
+            try:
+                label_database = np.load(get_label_database_filename(pooling))
+            except OSError:
+                label_database = convert_label_database(pooling)
 
     else:
         if descriptor_database is None:
@@ -252,6 +255,8 @@ def batch_retrieve_similar_features(query_app_ids=None,
             label_database = np.load(get_label_database_filename(pooling))
         except FileNotFoundError:
             feature_database_exists = False
+        except OSError:
+            label_database = convert_label_database(pooling)
 
         keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
 
