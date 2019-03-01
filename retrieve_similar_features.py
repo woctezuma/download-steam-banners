@@ -289,7 +289,7 @@ def batch_retrieve_similar_features(query_app_ids=None,
 
 
 if __name__ == '__main__':
-    query_app_ids = ['620']  # , '364470', '504230', '583950', '646570', '863550', '794600']
+    query_app_ids = None  # ['620', '364470', '504230', '583950', '646570', '863550', '794600']
 
     use_keras_features = True
     use_cosine_similarity = True
