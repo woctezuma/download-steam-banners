@@ -46,11 +46,31 @@ Finally, retrieve Steam games with similar store banners:
 
 ## Results
 
-Results obtained with features from a neural net are shown with:
+In the results below, Steam banners are matched based on features from a neural net.
+The features can be either concatenated, or merged via a pooling process (average or maximum pooling).
+The similarity between features can be assessed with either cosine similarity or Minkowski distance.
+
+An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/download-steam-banners/wiki/).
+
+Caveat: the following pages contain a lot of images and might be slow to load depending on your Internet bandwith.
+
+### Based on the concatenation of raw features
+
+Results based on the concatenation of raw features from a neural net are shown with:
 -   [cosine similarity](https://github.com/woctezuma/download-steam-banners/wiki/top_100_cosine_similarity),
 -   [Minkowski distance](https://github.com/woctezuma/download-steam-banners/wiki/top_100_minkowski_distance).
 
-Caveat: these pages contain a lot of images and might be slow to load depending on your Internet bandwith.
+### Based on the average pooling of features
+
+Results based on the average pooling of features are shown with:
+-   [cosine similarity](https://github.com/woctezuma/download-steam-banners/wiki/top_100_cosine_similarity_with_average_pooling),
+-   [Minkowski distance](https://github.com/woctezuma/download-steam-banners/wiki/top_100_minkowski_distance_with_average_pooling).
+
+### Based on the maximum pooling of features
+
+Results based on the maximum pooling of features are shown with:
+-   [cosine similarity](https://github.com/woctezuma/download-steam-banners/wiki/top_100_cosine_similarity_with_max_pooling),
+-   [Minkowski distance](https://github.com/woctezuma/download-steam-banners/wiki/top_100_minkowski_distance_with_max_pooling).
 
 ## References
 
