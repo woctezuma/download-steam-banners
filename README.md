@@ -50,7 +50,7 @@ In the results below, Steam banners are matched based on features from a neural 
 The features can be either concatenated, or merged via a pooling process (average or maximum pooling).
 The similarity between features can be assessed with either cosine similarity or Minkowski distance.
 
-An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/download-steam-banners/wiki/).
+An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/download-steam-banners/wiki/Commentary).
 
 Caveat: the following pages contain a lot of images and might be slow to load depending on your Internet bandwith.
 
