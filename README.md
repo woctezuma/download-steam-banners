@@ -51,6 +51,9 @@ The features can be either concatenated, or merged via a pooling process (averag
 The similarity between features can be assessed with either cosine similarity or Minkowski distance.
 
 An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/download-steam-banners/wiki/Commentary).
+Overall, I would suggest to match features with:
+-   cosine similarity, to avoid having to deal with weird matches of feature vectors with a norm close to zero,
+-   either concatenation or average pooling of features: with concatenation, the banner layout greatly constrains the matching.
 
 Caveat: the following pages contain a lot of images and might be slow to load depending on your Internet bandwith.
 
