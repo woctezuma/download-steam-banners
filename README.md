@@ -10,6 +10,10 @@ This repository contains Python code to retrieve Steam games with similar store 
 
 ![Similar banners with cosine similarity and average pooling](https://github.com/woctezuma/download-steam-banners/wiki/img/LVUG4Gb.png)
 
+## Data
+
+Data is available as a snapshot in [another repository](https://github.com/woctezuma/download-steam-banners-data).
+
 ## Requirements
 
 -   Install the latest version of [Python 3.X](https://www.python.org/downloads/). For CNTK, you will need Python 3.6.
