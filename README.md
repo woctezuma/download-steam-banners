@@ -38,7 +38,7 @@ The current code parses game names from app details. To provide access to app de
 1.   Download app details with [`steam-api`](https://github.com/woctezuma/steam-api) or directly from [`steam-api-data`](https://github.com/woctezuma/steam-api-data), 
 2.   Fill in the path to `steam-api/data/appdetails/` in `download_steam_banners.py`. This can be done by filling in your Windows username in `get_user_name()`. 
 
-Alternatively, the code could be edited to rely on more accessible data, available via [SteamSpy API]((https://github.com/woctezuma/steamspypi).
+Alternatively, the code could be edited to rely on more accessible data, available via [SteamSpy API](https://github.com/woctezuma/steamspypi).
 
 ### Download Steam banners
 
