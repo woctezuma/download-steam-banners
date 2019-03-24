@@ -31,6 +31,15 @@ pip install opencv_python-4.0.1-cp36-cp36m-win_amd64.whl
 
 ## Usage
 
+### Download Steam app details
+
+The current code parses game names from app details. To provide access to app details:
+
+1.   Download app details with [`steam-api`](https://github.com/woctezuma/steam-api) or directly from [`steam-api-data`](https://github.com/woctezuma/steam-api-data), 
+2.   Fill in the path to `steam-api/data/appdetails/` in `download_steam_banners.py`. This can be done by filling in your Windows username in `get_user_name()`. 
+
+Alternatively, the code could be edited to rely on more accessible data, available via [SteamSpy API]((https://github.com/woctezuma/steamspypi).
+
 ### Download Steam banners
 
 There are 3 possibilities to download the Steam store banners of every Steam game:
