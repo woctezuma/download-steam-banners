@@ -51,6 +51,27 @@ def get_banner_file_name(app_id):
     return banner_file_name
 
 
+def get_banner_url(app_details):
+    banner_url = app_details['header_image']
+
+    return banner_url
+
+
+def get_screenshot_url(app_details, screenshot_index=0, is_thumbnail=True):
+    if is_thumbnail:
+        screenshot_url = app_details['screenshots'][screenshot_index]['path_thumbnail']
+    else:
+        screenshot_url = app_details['screenshots'][screenshot_index]['path_full']
+
+    return screenshot_url
+
+
+def get_background_url(app_details):
+    background_url = app_details['background']
+
+    return background_url
+
+
 async def main():
     async with aiohttp.ClientSession() as session:
 
@@ -70,7 +91,7 @@ async def main():
             if app_type == 'game':
 
                 try:
-                    banner_url = app_details['header_image']
+                    banner_url = get_banner_url(app_details)
                 except KeyError:
                     continue
 
