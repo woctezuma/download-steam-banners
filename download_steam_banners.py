@@ -46,9 +46,41 @@ def get_app_details(app_id):
     return app_details
 
 
+def get_image_file_name(app_id, sub_folder_name=None):
+    if sub_folder_name is None:
+        fixed_subfolder_name = ''
+    else:
+        if sub_folder_name.endswith('/'):
+            fixed_subfolder_name = sub_folder_name
+        else:
+            fixed_subfolder_name = sub_folder_name + '/'
+
+    image_file_name = get_output_data_path() + fixed_subfolder_name + app_id + '.jpg'
+
+    return image_file_name
+
+
 def get_banner_file_name(app_id):
-    banner_file_name = get_output_data_path() + app_id + '.jpg'
+    banner_file_name = get_image_file_name(app_id, sub_folder_name=None)
+
     return banner_file_name
+
+
+def get_screenshot_file_name(app_id, screenshot_index=0, is_thumbnail=True):
+    sub_folder_name = 'screenshot_' + str(screenshot_index)
+
+    if is_thumbnail:
+        sub_folder_name += '_thumbnail'
+
+    screenshot_file_name = get_image_file_name(app_id, sub_folder_name=sub_folder_name)
+
+    return screenshot_file_name
+
+
+def get_background_file_name(app_id):
+    background_file_name = get_image_file_name(app_id, sub_folder_name='background')
+
+    return background_file_name
 
 
 def get_banner_url(app_details):
