@@ -55,7 +55,10 @@ def get_image_file_name(app_id, sub_folder_name=None):
         else:
             fixed_subfolder_name = sub_folder_name + '/'
 
-    image_file_name = get_output_data_path() + fixed_subfolder_name + app_id + '.jpg'
+    full_folder_path = get_output_data_path() + fixed_subfolder_name
+    Path(full_folder_path).mkdir(parents=True, exist_ok=True)
+
+    image_file_name = full_folder_path + app_id + '.jpg'
 
     return image_file_name
 
