@@ -104,11 +104,19 @@ def get_background_url(app_details):
     return background_url
 
 
-async def main():
+async def main(image_type='banner', screenshot_index=0, is_thumbnail=True):
     async with aiohttp.ClientSession() as session:
 
         for app_id in sorted(get_app_ids(), key=int):
-            banner_file_name = Path(get_banner_file_name(app_id))
+
+            if image_type == 'screenshot':
+                banner_file_name_as_str = get_screenshot_file_name(app_id, screenshot_index, is_thumbnail)
+            elif image_type == 'background':
+                banner_file_name_as_str = get_background_file_name(app_id)
+            else:
+                banner_file_name_as_str = get_banner_file_name(app_id)
+
+            banner_file_name = Path(banner_file_name_as_str)
 
             if banner_file_name.exists():
                 continue
@@ -123,7 +131,12 @@ async def main():
             if app_type == 'game':
 
                 try:
-                    banner_url = get_banner_url(app_details)
+                    if image_type == 'screenshot':
+                        banner_url = get_screenshot_url(app_details, screenshot_index, is_thumbnail)
+                    elif image_type == 'background':
+                        banner_url = get_background_url(app_details)
+                    else:
+                        banner_url = get_banner_url(app_details)
                 except KeyError:
                     continue
 
