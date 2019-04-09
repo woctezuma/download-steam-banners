@@ -10,10 +10,6 @@ This repository contains Python code to retrieve Steam games with similar store 
 
 ![Similar banners with cosine similarity and average pooling](https://github.com/woctezuma/download-steam-banners/wiki/img/LVUG4Gb.png)
 
-## Data
-
-Data is available as a snapshot in [another repository](https://github.com/woctezuma/download-steam-banners-data).
-
 ## Requirements
 
 -   Install the latest version of [Python 3.X](https://www.python.org/downloads/). For CNTK, you will need Python 3.6.
@@ -29,7 +25,7 @@ NB: For Windows, you may find a more recent version of OpenCV in [this repositor
 pip install opencv_python-4.0.1-cp36-cp36m-win_amd64.whl
 ```
 
-## Usage
+## Data
 
 ### Download Steam app details
 
@@ -45,7 +41,9 @@ Alternatively, the code could be edited to rely on more accessible data, availab
 There are 3 possibilities to download the Steam store banners of every Steam game:
 1.   If you have already downloaded the app details with [`steam-api`](https://github.com/woctezuma/steam-api), then you could run `download_steam_banners.py`.
 2.   Run [this IPython notebook](https://github.com/woctezuma/google-colab/blob/master/download_steam_banners.ipynb) which does not require to download app details: the URLs for Steam banners are similarly formatted and can be inferred from the appID alone.
-3.   Download a data snapshot [`128x128.zip`](https://github.com/woctezuma/google-colab/tree/master/data) from early February 2019, consisting of 31,723 Steam banners, resized to 128x128 resolution and saved as .jpg files with RGB channels.
+3.   Download a data snapshot from February 2019, consisting of 31,723 Steam banners, with RGB channels, saved as .jpg:
+     - [`download-steam-banners-data/`](https://github.com/woctezuma/download-steam-banners-data) for original images,
+     - [`128x128.zip`](https://github.com/woctezuma/google-colab/tree/master/data) for images resized to 128x128 resolution.
 
 Method 1 is the most exhaustive option: all the appIDs are listed via Steam API, and app details allow to check whether an appID matches a game, a DLC, a video, etc.
 
@@ -53,11 +51,15 @@ Method 2 is a nice trade-off: appIDs are listed via SteamSpy API, and they all m
 
 Method 3 is the fastest option: you get a snapshot of downsampled banners.
 
+## Usage
+
 ### Find games with similar Steam banners
 
-Finally, retrieve Steam games with similar store banners:
+Retrieve Steam games with similar store banners:
 -   either based on [hashes](https://github.com/JohannesBuchner/imagehash) with `build_search_index.py` and `retrieve_similar_banners.py`,
--   or based on image features ([ORB descriptors](https://docs.opencv.org/master/dc/dc3/tutorial_py_matcher.html) or features from [a neural net](https://keras.io/applications/#models-for-image-classification-with-weights-trained-on-imagenet)) with `build_feature_index.py` and `retrieve_similar_features.py`.
+-   or based on image features with `build_feature_index.py` and `retrieve_similar_features.py`:
+    - either [ORB descriptors](https://docs.opencv.org/master/dc/dc3/tutorial_py_matcher.html),
+    - or features extracted by [a neural net](https://keras.io/applications/#models-for-image-classification-with-weights-trained-on-imagenet).
 
 ## Results
 
