@@ -30,8 +30,11 @@ def get_search_index_filename(hashmethod=None):
     return search_index_filename
 
 
-def list_app_ids():
-    image_filenames = Path(get_data_folder()).glob('*' + get_file_extension())
+def list_app_ids(data_folder=None):
+    if data_folder is None:
+        data_folder = get_data_folder()
+
+    image_filenames = Path(data_folder).glob('*' + get_file_extension())
 
     app_ids = [banner.name.strip(get_file_extension()) for banner in image_filenames]
 
@@ -40,8 +43,10 @@ def list_app_ids():
     return app_ids
 
 
-def app_id_to_image_filename(app_id):
-    data_folder = get_data_folder()
+def app_id_to_image_filename(app_id, data_folder=None):
+    if data_folder is None:
+        data_folder = get_data_folder()
+
     Path(data_folder).mkdir(exist_ok=True)
     image_filename = data_folder + app_id + get_file_extension()
     return image_filename

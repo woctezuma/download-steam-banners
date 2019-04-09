@@ -135,10 +135,10 @@ def label_image(image, model, verbose=False):
     return yhat
 
 
-def build_feature_index(verbose=False, save_keras_output=False, include_top=True, pooling=None):
+def build_feature_index(verbose=False, save_keras_output=False, include_top=True, pooling=None, data_folder=None):
     # Reference: https://docs.opencv.org/4.0.1/dc/dc3/tutorial_py_matcher.html
 
-    app_ids = list_app_ids()
+    app_ids = list_app_ids(data_folder=data_folder)
 
     num_games = len(app_ids)
 
@@ -191,7 +191,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
             print('Elapsed time: {:.2f} s'.format(time() - start))
             start = time()
 
-        image_filename = app_id_to_image_filename(app_id)
+        image_filename = app_id_to_image_filename(app_id, data_folder=data_folder)
 
         if Y_hat is not None:
             image = load_img(image_filename, target_size=target_model_size)
