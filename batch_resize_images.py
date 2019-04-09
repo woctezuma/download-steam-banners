@@ -33,7 +33,7 @@ def center_crop(img, new_width=None, new_height=None):
 
 
 def resize_all_images(output_shape=None, display_images=False, verbose_interval=1000,
-                      sub_folder=None, apply_center_crop=False):
+                      sub_folder=None, apply_center_crop=False, apply_resize=True):
     if output_shape is None:
         output_shape = [128, 128]
 
@@ -57,9 +57,17 @@ def resize_all_images(output_shape=None, display_images=False, verbose_interval=
         if not Path(output_path).exists():
 
             image = cv2.imread(input_path)
+
             if apply_center_crop:
-                image = center_crop(image)
-            resized_image = cv2.resize(image, tuple(output_shape))
+                center_cropped_image = center_crop(image)
+            else:
+                center_cropped_image = image
+
+            if apply_resize:
+                resized_image = cv2.resize(center_cropped_image, tuple(output_shape))
+            else:
+                resized_image = center_cropped_image
+
             cv2.imwrite(output_path, resized_image)
 
             if (counter + 1) % verbose_interval == 0:
