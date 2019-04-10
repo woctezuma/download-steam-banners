@@ -37,12 +37,14 @@ async def download_steam_banner_again(app_id, banner_file_name):
 
 
 def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor_img_id=None,
-                              label_database=None, keras_model=None, target_model_size=None, pooling=None, knn=None):
-    image_filename = app_id_to_image_filename(query_app_id)
+                              label_database=None, keras_model=None, target_model_size=None, pooling=None, knn=None,
+                              data_folder=None,
+                              images_are_store_banners=True):
+    image_filename = app_id_to_image_filename(query_app_id, data_folder=data_folder)
 
     if keras_model is not None:
 
-        if not Path(image_filename).exists():
+        if images_are_store_banners and not Path(image_filename).exists():
             print('File {} not found: appID {} likely unavailable in this region.'.format(image_filename, query_app_id))
             loop = asyncio.get_event_loop()
             loop.run_until_complete(download_steam_banner_again(query_app_id, image_filename))
@@ -97,7 +99,7 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
 
     except FileNotFoundError:
         print('Assumption: no new banner was downloaded since the last feature pre-computation.')
-        app_ids = list_app_ids()
+        app_ids = list_app_ids(data_folder=data_folder)
 
     if keras_model is not None:
         trimmed_descriptor_database = label_database.copy()
@@ -239,7 +241,9 @@ def batch_retrieve_similar_features(query_app_ids=None,
                                     use_cosine_similarity=True,
                                     print_banners=True,
                                     use_markdown_syntax=True,
-                                    pooling=None):
+                                    pooling=None,
+                                    data_folder=None,
+                                    images_are_store_banners=True):
     if query_app_ids is None:
         query_app_ids = get_top_100_app_ids()
 
@@ -281,7 +285,10 @@ def batch_retrieve_similar_features(query_app_ids=None,
         for query_app_id in query_app_ids:
             reference_app_id_counter = retrieve_similar_features(query_app_id, descriptor_database, descriptor_img_id,
                                                                  label_database, keras_model, target_model_size,
-                                                                 pooling, knn)
+                                                                 pooling, knn,
+                                                                 data_folder=data_folder,
+                                                                 images_are_store_banners=images_are_store_banners)
+            # TODO catch exception for games unavailable in my region
             print_ranking(query_app_id, reference_app_id_counter, only_print_banners=print_banners,
                           use_markdown_syntax=use_markdown_syntax)
 
@@ -302,4 +309,6 @@ if __name__ == '__main__':
                                         use_cosine_similarity,
                                         print_banners,
                                         use_markdown_syntax,
-                                        pooling)
+                                        pooling,
+                                        data_folder='128x128/',
+                                        images_are_store_banners=True)
