@@ -66,7 +66,11 @@ def get_user_name():
 
 ## Results
 
-Results obtained with a neural net are shown [on the Wiki](https://github.com/woctezuma/download-steam-banners/wiki).
+Results obtained with a neural net ([MobileNet](https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet.py)) are shown [on the Wiki](https://github.com/woctezuma/download-steam-banners/wiki).
+
+Results obtained with alternative methods are not shown:
+-   image hashes are mostly useful to detect duplicates,
+-   ORB descriptors seem less relevant than the features obtained with MobileNet. 
 
 An in-depth commentary is provided [on the Wiki](https://github.com/woctezuma/download-steam-banners/wiki/Commentary).
 Overall, I would suggest to match features with:
