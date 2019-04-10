@@ -283,12 +283,20 @@ def batch_retrieve_similar_features(query_app_ids=None,
 
     if feature_database_exists:
         for query_app_id in query_app_ids:
-            reference_app_id_counter = retrieve_similar_features(query_app_id, descriptor_database, descriptor_img_id,
-                                                                 label_database, keras_model, target_model_size,
-                                                                 pooling, knn,
-                                                                 data_folder=data_folder,
-                                                                 images_are_store_banners=images_are_store_banners)
-            # TODO catch exception for games unavailable in my region
+            try:
+                reference_app_id_counter = retrieve_similar_features(query_app_id,
+                                                                     descriptor_database,
+                                                                     descriptor_img_id,
+                                                                     label_database,
+                                                                     keras_model,
+                                                                     target_model_size,
+                                                                     pooling,
+                                                                     knn,
+                                                                     data_folder=data_folder,
+                                                                     images_are_store_banners=images_are_store_banners)
+            except FileNotFoundError:
+                print('Query image not found: appID {} likely unavailable in this region.'.format(query_app_id))
+                continue
             print_ranking(query_app_id, reference_app_id_counter, only_print_banners=print_banners,
                           use_markdown_syntax=use_markdown_syntax)
 
