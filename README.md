@@ -68,7 +68,7 @@ def get_user_name():
 
 Results obtained with a neural net are shown [on the Wiki](https://github.com/woctezuma/download-steam-banners/wiki).
 
-An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/download-steam-banners/wiki/Commentary).
+An in-depth commentary is provided [on the Wiki](https://github.com/woctezuma/download-steam-banners/wiki/Commentary).
 Overall, I would suggest to match features with:
 -   cosine similarity, to avoid having to deal with weird matches of feature vectors with a norm close to zero,
 -   either [concatenation](https://github.com/woctezuma/download-steam-banners/wiki/top_100_cosine_similarity) or [average pooling](https://github.com/woctezuma/download-steam-banners/wiki/top_100_cosine_similarity_with_average_pooling): with concatenation, the banner layout greatly constrains the matching.
