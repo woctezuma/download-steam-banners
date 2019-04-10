@@ -98,6 +98,7 @@ Results based on the maximum pooling of features are shown with:
 
 ## References
 
+-   [`download-steam-screenshots`](https://github.com/woctezuma/download-steam-screenshots): retrieve Steam games with similar store **screenshots**,
 -   [Zhang, Richard, et al. "The unreasonable effectiveness of deep features as a perceptual metric." Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2018.](https://github.com/richzhang/PerceptualSimilarity)
 -   [Image hashes](https://github.com/JohannesBuchner/imagehash)
 -   [Another Github repository about image similarity](https://github.com/ankonzoid/artificio)
