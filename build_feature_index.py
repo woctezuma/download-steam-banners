@@ -191,8 +191,8 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
             if Y_hat is not None:
                 np.save(get_label_database_filename(pooling), Y_hat)
                 freeze_app_ids(app_ids)
-            print('Elapsed time for saving the result to disk: {:.2f} s'.format(time() - start))
-            start = time()
+                print('Elapsed time for saving the result to disk: {:.2f} s'.format(time() - start))
+                start = time()
 
         image_filename = app_id_to_image_filename(app_id, data_folder=data_folder)
 
