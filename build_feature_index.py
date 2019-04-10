@@ -184,11 +184,14 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
                 pass
 
         if (counter % 1200) == 0:
+            print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
+            print('Elapsed time for computing image features: {:.2f} s'.format(time() - start))
+            start = time()
+
             if Y_hat is not None:
                 np.save(get_label_database_filename(pooling), Y_hat)
                 freeze_app_ids(app_ids)
-            print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
-            print('Elapsed time: {:.2f} s'.format(time() - start))
+            print('Elapsed time for saving the result to disk: {:.2f} s'.format(time() - start))
             start = time()
 
         image_filename = app_id_to_image_filename(app_id, data_folder=data_folder)
