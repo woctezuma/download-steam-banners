@@ -257,10 +257,11 @@ def batch_retrieve_similar_features(query_app_ids=None,
         try:
             print('\n[pooling] {}'.format(pooling))
             label_database = np.load(get_label_database_filename(pooling))
-        except FileNotFoundError:
-            feature_database_exists = False
-        except OSError:
-            label_database = convert_label_database(pooling)
+        except FileNotFoundError or OSError:
+            if pooling is None:
+                feature_database_exists = False
+            else:
+                label_database = convert_label_database(pooling)
 
         keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
 
