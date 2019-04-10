@@ -53,6 +53,10 @@ Method 3 is the fastest option: you get a snapshot of downsampled banners.
 
 ## Usage
 
+### Pre-processing
+
+Store banners are resized to 128x128 with [`batch_resize_images.py`](batch_resize_images.py).
+
 ### Find games with similar Steam banners
 
 Retrieve Steam games with similar store banners:
