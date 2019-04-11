@@ -48,7 +48,7 @@ def app_id_to_image_filename(app_id, data_folder=None):
         data_folder = get_data_folder()
 
     Path(data_folder).mkdir(exist_ok=True)
-    image_filename = data_folder + app_id + get_file_extension()
+    image_filename = data_folder + str(app_id) + get_file_extension()
     return image_filename
 
 
