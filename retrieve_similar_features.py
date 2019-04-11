@@ -236,6 +236,23 @@ def get_top_100_app_ids():
     return top_100_app_ids
 
 
+def load_benchmarked_app_ids(append_hard_coded_app_ids=True):
+    # Reference: https://github.com/woctezuma/steam-descriptions/blob/master/benchmark_utils.py
+
+    top_100_app_ids = get_top_100_app_ids()
+
+    # Append hard-coded appIDs
+
+    additional_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600', '814380']
+
+    benchmarked_app_ids = top_100_app_ids
+    if append_hard_coded_app_ids:
+        for app_id in set(additional_app_ids).difference(top_100_app_ids):
+            benchmarked_app_ids.append(app_id)
+
+    return benchmarked_app_ids
+
+
 def batch_retrieve_similar_features(query_app_ids=None,
                                     use_keras_features=True,
                                     use_cosine_similarity=True,
@@ -245,7 +262,7 @@ def batch_retrieve_similar_features(query_app_ids=None,
                                     data_folder=None,
                                     images_are_store_banners=True):
     if query_app_ids is None:
-        query_app_ids = get_top_100_app_ids()
+        query_app_ids = load_benchmarked_app_ids()
 
     descriptor_database = None
     descriptor_img_id = None
