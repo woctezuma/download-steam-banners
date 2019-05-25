@@ -40,7 +40,7 @@ def populate_database(pooling=None):
 
     sim_dict = dict()
     for counter, query_app_id in enumerate(app_ids):
-        last_index = num_neighbors-1
+        last_index = num_neighbors - 1
 
         second_best_match = matches[counter][last_index]
         second_best_matched_app_id = app_ids[second_best_match]
