@@ -9,6 +9,7 @@ from time import time
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
+from build_feature_index import get_features_folder_name
 from build_feature_index import get_label_database_filename, convert_label_database, get_frozen_app_ids
 
 
@@ -57,7 +58,7 @@ def populate_database(pooling=None):
 
 
 def get_unique_games_file_name(pooling=None):
-    unique_games_file_name = 'features/unique_games'
+    unique_games_file_name = get_features_folder_name() + 'unique_games'
 
     if pooling is not None:
         unique_games_file_name += '.' + pooling
