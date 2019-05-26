@@ -161,7 +161,7 @@ def print_unique_games(sim_dict,
     return unique_app_ids
 
 
-def main(pooling=None,
+def main(pooling=None,  # Either None, or 'avg', or 'max'
          similarity_threshold=0.149,
          update_sim_dict=False,
          only_print_banners=False,
