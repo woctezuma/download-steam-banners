@@ -69,6 +69,8 @@ def populate_database(pooling=None):
     num_neighbors = 1
 
     start = time()
+    # Caveat: the output 'dist' returned by knn.kneighbors() is the 'cosine distance', not the cosine similarity!
+    # Reference: https://en.wikipedia.org/wiki/Cosine_similarity
     dist, matches = knn.kneighbors(X=query, n_neighbors=num_neighbors)
     print('Elapsed time: {:.2f} s'.format(time() - start))
 
@@ -81,7 +83,8 @@ def populate_database(pooling=None):
         second_best_match = matches[counter][last_index]
         second_best_matched_app_id = app_ids[second_best_match]
 
-        second_best_similarity_score = dist[counter][last_index]
+        cosine_distance = dist[counter][last_index]
+        second_best_similarity_score = 1.0 - cosine_distance
 
         sim_dict[query_app_id] = dict()
         sim_dict[query_app_id]['app_id'] = second_best_matched_app_id
