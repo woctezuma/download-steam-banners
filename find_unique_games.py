@@ -163,7 +163,7 @@ def print_unique_games(sim_dict,
 
 def main(pooling=None,
          similarity_threshold=0.149,
-         update_sim_dict=True,
+         update_sim_dict=False,
          only_print_banners=False,
          use_markdown=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
