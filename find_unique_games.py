@@ -162,7 +162,7 @@ def print_unique_games(sim_dict,
 
 
 def main(pooling=None,  # Either None, or 'avg', or 'max'
-         similarity_threshold=0.149,
+         similarity_threshold=0.01,
          update_sim_dict=False,
          only_print_banners=False,
          use_markdown=True):
