@@ -7,10 +7,46 @@ import logging
 from time import time
 
 import numpy as np
+import steamspypi
 from sklearn.neighbors import NearestNeighbors
 
 from build_feature_index import get_features_folder_name
 from build_feature_index import get_label_database_filename, convert_label_database, get_frozen_app_ids
+
+
+def load_game_names_from_steamspy():
+    data = steamspypi.load()
+
+    game_names = dict()
+    for app_id in data.keys():
+        game_names[app_id] = data[app_id]['name']
+
+    return game_names
+
+
+def get_app_name(app_id, game_names=None):
+    # Reference: https://github.com/woctezuma/steam-descriptions/blob/master/benchmark_utils.py
+    if game_names is None:
+        game_names = load_game_names_from_steamspy()
+
+    try:
+        app_name = game_names[str(app_id)]
+    except KeyError:
+        app_name = 'Unknown'
+
+    return app_name
+
+
+def get_store_url(app_id):
+    # Reference: https://github.com/woctezuma/steam-descriptions/blob/master/benchmark_utils.py
+    store_url = 'https://store.steampowered.com/app/' + str(app_id)
+    return store_url
+
+
+def get_banner_url(app_id):
+    # Reference: https://github.com/woctezuma/steam-descriptions/blob/master/benchmark_utils.py
+    banner_url = 'https://steamcdn-a.akamaihd.net/steam/apps/' + str(app_id) + '/header.jpg'
+    return banner_url
 
 
 def populate_database(pooling=None):
@@ -75,6 +111,56 @@ def load_sim_dict(pooling=None):
     return sim_dict
 
 
+def get_small_banner_url(app_id):
+    # Reference: https://github.com/woctezuma/steam-descriptions/blob/master/find_unique_games.py
+    small_banner_url = 'https://steamcdn-a.akamaihd.net/steam/apps/' + str(app_id) + '/capsule_sm_120.jpg'
+    return small_banner_url
+
+
+def get_bb_code_linked_image(app_id):
+    # Reference: https://github.com/woctezuma/steam-descriptions/blob/master/find_unique_games.py
+    bb_code_linked_image = '[URL={}][IMG]{}[/IMG][/URL]'.format(get_store_url(app_id), get_small_banner_url(app_id))
+    return bb_code_linked_image
+
+
+def print_unique_games(sim_dict,
+                       similarity_threshold,
+                       game_names,
+                       only_print_banners=False,
+                       use_markdown=True):
+    # Reference: https://github.com/woctezuma/steam-descriptions/blob/master/find_unique_games.py
+    # Markdown
+    # Reference: https://stackoverflow.com/a/14747656
+    image_link_str = '[<img alt="{}" src="{}" width="{}">]({})'
+    image_width = 150
+
+    sorted_app_ids = sorted(sim_dict.keys(), key=lambda x: sim_dict[x]['similarity'])
+
+    unique_app_ids = []
+
+    for counter, app_id in enumerate(sorted_app_ids):
+        similarity_value = sim_dict[app_id]['similarity']
+        if similarity_value <= similarity_threshold:
+            unique_app_ids.append(app_id)
+
+            app_name = get_app_name(app_id, game_names=game_names)
+            if only_print_banners:
+                if use_markdown:
+                    # Markdown
+                    print(image_link_str.format(app_name, get_banner_url(app_id), image_width, get_store_url(app_id)))
+                else:
+                    # BBCode
+                    end_of_entry = ' '  # Either a line break '\n' or a space ' '. Prefer spaces if you post to a forum.
+                    print(get_bb_code_linked_image(app_id), end=end_of_entry)
+            else:
+                print('{}) similarity = {:.2f} ; appID = {} ({})'.format(counter + 1,
+                                                                         similarity_value,
+                                                                         app_id,
+                                                                         app_name))
+
+    return unique_app_ids
+
+
 def main(pooling=None,
          similarity_threshold=0.149,
          update_sim_dict=True,
@@ -82,12 +168,18 @@ def main(pooling=None,
          use_markdown=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
+    game_names = load_game_names_from_steamspy()
+
     if update_sim_dict:
         sim_dict = populate_database(pooling=pooling)
     else:
         sim_dict = load_sim_dict(pooling=pooling)
 
-    # TODO use similarity_threshold
+    unique_app_ids = print_unique_games(sim_dict,
+                                        similarity_threshold,
+                                        game_names,
+                                        only_print_banners=only_print_banners,
+                                        use_markdown=use_markdown)
 
     return
 
