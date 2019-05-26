@@ -66,6 +66,8 @@ def get_user_name():
 
 ## Results
 
+### Similar games
+
 Results obtained with a neural net ([MobileNet](https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet.py)) are shown [on the Wiki](https://github.com/woctezuma/download-steam-banners/wiki).
 
 Results obtained with alternative methods are not shown:
@@ -76,6 +78,15 @@ An in-depth commentary is provided [on the Wiki](https://github.com/woctezuma/do
 Overall, I would suggest to match features with:
 -   cosine similarity, to avoid having to deal with weird matches of feature vectors with a norm close to zero,
 -   either [concatenation](https://github.com/woctezuma/download-steam-banners/wiki/top_100_cosine_similarity) or [average pooling](https://github.com/woctezuma/download-steam-banners/wiki/top_100_cosine_similarity_with_average_pooling): with concatenation, the banner layout greatly constrains the matching.
+
+### Unique games
+
+It is possible to highlight games with *unique* store banners, by applying a threshold to similarity values output by the algorithm.
+This is done in [`find_unique_games.py`](find_unique_games.py):
+-   cosine similarity is used to compare features,
+-   a game is *unique* if the similarity score between a query game and its most similar game (other than itself) is lower than or equal to an arbitrary threshold of 1%.
+
+Results are shown [here](https://github.com/woctezuma/download-steam-banners/wiki/Unique_Games).
 
 ## References
 
