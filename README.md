@@ -29,7 +29,7 @@ pip install opencv_python-4.0.1-cp36-cp36m-win_amd64.whl
 
 A data snapshot from February 2019 is available in:
 -   [`download-steam-banners-data/`](https://github.com/woctezuma/download-steam-banners-data) for the 31,724 original RBG images,
--   [`128x128.zip`](https://github.com/woctezuma/google-colab/tree/master/data) for images resized to 128x128 resolution.
+-   [`128x128.zip`](https://drive.google.com/open?id=1YLhdwgnhyP-eC4gHOmTsmuiUSr0XN5XJ) for images resized to 128x128 resolution.
 
 Otherwise, you would have to:
 1.   download app details with [`steam-api`](https://github.com/woctezuma/steam-api),
