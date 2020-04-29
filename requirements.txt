@@ -1,7 +1,7 @@
 aiohttp==3.5.4
 aiofiles==0.4.0
 opencv-contrib-python==4.1.0.25
-imagehash==4.0
+imagehash==4.1.0
 matplotlib==3.1.1
 cntk==2.7
 keras==2.2.5
