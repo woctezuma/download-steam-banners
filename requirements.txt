@@ -6,6 +6,6 @@ matplotlib==3.1.1
 cntk==2.7
 keras==2.2.5
 pillow==7.0.0
-scikit-learn==0.21.3
+scikit-learn==0.23.0
 steamspypi==1.0.0
 
