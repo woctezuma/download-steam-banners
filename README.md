@@ -88,6 +88,7 @@ Results are shown [here](https://github.com/woctezuma/download-steam-banners/wik
 
 ## References
 
+-   [`match-steam-banners`](https://github.com/woctezuma/match-steam-banners): retrieve Steam games with similar store **banners** using MobileNet v3,
 -   [`download-steam-screenshots`](https://github.com/woctezuma/download-steam-screenshots): retrieve Steam games with similar store **screenshots**,
 -   [Zhang, Richard, et al. "The unreasonable effectiveness of deep features as a perceptual metric." Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2018.](https://github.com/richzhang/PerceptualSimilarity)
 -   [Image hashes](https://github.com/JohannesBuchner/imagehash)
