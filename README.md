@@ -35,6 +35,7 @@ Otherwise, you would have to:
 3.   download the banners with [`download_steam_banners.py`](download_steam_banners.py).
 
 Alternatively, run [this IPython notebook][download_steam_banners]. 
+[![Open In Colab][colab-badge]][download_steam_banners]
 A list of of appIDs (tied to games) is first downloaded via [SteamSpy API](https://github.com/woctezuma/steamspypi).
 Then banner URLs are directly inferred from appIDs, without relying on app details.
 
@@ -110,3 +111,5 @@ Results are shown [here](https://github.com/woctezuma/download-steam-banners/wik
 [codacy-image]: <https://api.codacy.com/project/badge/Grade/c3ff7d48630544209f3adf29b03e1048>
 
 [download_steam_banners]: <https://colab.research.google.com/github/woctezuma/google-colab/blob/master/download_steam_banners.ipynb>
+
+[colab-badge]: <https://colab.research.google.com/assets/colab-badge.svg>
