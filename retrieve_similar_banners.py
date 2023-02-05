@@ -35,7 +35,9 @@ def reverse_search_index(hash_search_index):
 
 def retrieve_similar_banners(query_hash, hash_search_index, num_neighbors=3):
     reference_hashes = list(hash_search_index.keys())
-    distances = np.array([np.abs(query_hash - reference_hash) for reference_hash in reference_hashes])
+    distances = np.array(
+        [np.abs(query_hash - reference_hash) for reference_hash in reference_hashes],
+    )
 
     # Reference: https://stackoverflow.com/a/23734295
     ind = np.argpartition(distances, num_neighbors)[:num_neighbors]
@@ -70,14 +72,25 @@ def test_hash_search_index(hashmethod):
         print('\nQuery appID: {} ({})'.format(query_app_id, app_name))
 
         query_hash = reversed_search_index[query_app_id]
-        similar_app_ids = retrieve_similar_banners(query_hash, hash_search_index, num_neighbors=3)
+        similar_app_ids = retrieve_similar_banners(
+            query_hash,
+            hash_search_index,
+            num_neighbors=3,
+        )
 
         print('Similar appIDs: {}'.format(similar_app_ids))
         for app_id_group in similar_app_ids:
-            for (counter, app_id) in enumerate(app_id_group):
+            for counter, app_id in enumerate(app_id_group):
                 app_details = get_app_details(app_id)
                 app_name = app_details['name']
-                print('{}) app: {} ({} @ {})'.format(counter + 1, app_id, app_name, get_store_url(app_id)))
+                print(
+                    '{}) app: {} ({} @ {})'.format(
+                        counter + 1,
+                        app_id,
+                        app_name,
+                        get_store_url(app_id),
+                    ),
+                )
 
     return
 

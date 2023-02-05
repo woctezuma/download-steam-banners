@@ -22,7 +22,9 @@ def get_features_folder_name():
 
 
 def get_descriptor_database_filename():
-    descriptor_database_filename = get_features_folder_name() + 'descriptor_database.npy'
+    descriptor_database_filename = (
+        get_features_folder_name() + 'descriptor_database.npy'
+    )
     return descriptor_database_filename
 
 
@@ -37,7 +39,9 @@ def get_label_database_filename(pooling=None):
     else:
         pooling_str = '.' + pooling
 
-    label_database_filename = get_features_folder_name() + 'label_database' + pooling_str + '.npy'
+    label_database_filename = (
+        get_features_folder_name() + 'label_database' + pooling_str + '.npy'
+    )
     return label_database_filename
 
 
@@ -72,15 +76,19 @@ def convert_label_database(target_pooling=None):
     X = np.load(get_label_database_filename(pooling=None))
 
     # Feature shape before flattening
-    original_feature_shape = [4, 4, 256]  # Caveat: hard-coded for MobileNet with alpha=0.25 and input_shape=(128,128,3)
+    original_feature_shape = [
+        4,
+        4,
+        256,
+    ]  # Caveat: hard-coded for MobileNet with alpha=0.25 and input_shape=(128,128,3)
 
     if target_pooling == 'max':
         X_target = np.zeros((X.shape[0], original_feature_shape[-1]))
-        for (row, x) in enumerate(X):
+        for row, x in enumerate(X):
             X_target[row, :] = np.max(x.reshape(original_feature_shape), axis=(0, 1))
     elif target_pooling == 'avg':
         X_target = np.zeros((X.shape[0], original_feature_shape[-1]))
-        for (row, x) in enumerate(X):
+        for row, x in enumerate(X):
             X_target[row, :] = np.mean(x.reshape(original_feature_shape), axis=(0, 1))
     else:
         X_target = X
@@ -100,9 +108,18 @@ def load_keras_model(include_top=True, pooling='avg'):
     input_shape = tuple(list(target_model_size) + [num_channels])
 
     if include_top:
-        model = MobileNet(include_top=include_top, alpha=alpha_value, input_shape=input_shape)
+        model = MobileNet(
+            include_top=include_top,
+            alpha=alpha_value,
+            input_shape=input_shape,
+        )
     else:
-        model = MobileNet(include_top=include_top, pooling=pooling, alpha=alpha_value, input_shape=input_shape)
+        model = MobileNet(
+            include_top=include_top,
+            pooling=pooling,
+            alpha=alpha_value,
+            input_shape=input_shape,
+        )
 
     return model, target_model_size
 
@@ -135,7 +152,13 @@ def label_image(image, model, verbose=False):
     return yhat
 
 
-def build_feature_index(verbose=False, save_keras_output=False, include_top=True, pooling=None, data_folder=None):
+def build_feature_index(
+    verbose=False,
+    save_keras_output=False,
+    include_top=True,
+    pooling=None,
+    data_folder=None,
+):
     # Reference: https://docs.opencv.org/4.0.1/dc/dc3/tutorial_py_matcher.html
 
     app_ids = list_app_ids(data_folder=data_folder)
@@ -169,8 +192,7 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
         except FileNotFoundError:
             frozen_app_ids = None
 
-    for (counter, app_id) in enumerate(app_ids):
-
+    for counter, app_id in enumerate(app_ids):
         if frozen_Y_hat is not None and frozen_app_ids is not None:
             # Avoid re-computing values of Y_hat which were previously computed and saved to disk, then recently loaded
             try:
@@ -185,13 +207,21 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
 
         if (counter % 1200) == 0:
             print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
-            print('Elapsed time for computing image features: {:.2f} s'.format(time() - start))
+            print(
+                'Elapsed time for computing image features: {:.2f} s'.format(
+                    time() - start,
+                ),
+            )
             start = time()
 
             if Y_hat is not None:
                 np.save(get_label_database_filename(pooling), Y_hat)
                 freeze_app_ids(app_ids)
-                print('Elapsed time for saving the result to disk: {:.2f} s'.format(time() - start))
+                print(
+                    'Elapsed time for saving the result to disk: {:.2f} s'.format(
+                        time() - start,
+                    ),
+                )
                 start = time()
 
         image_filename = app_id_to_image_filename(app_id, data_folder=data_folder)
@@ -231,9 +261,12 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
                 # Otherwise:
                 img2 = img.copy()
                 for marker in kp:
-                    img2 = cv.drawMarker(img2,
-                                         tuple(int(i) for i in marker.pt),
-                                         color=(0, 255, 0), markerType=cv.MARKER_DIAMOND)
+                    img2 = cv.drawMarker(
+                        img2,
+                        tuple(int(i) for i in marker.pt),
+                        color=(0, 255, 0),
+                        markerType=cv.MARKER_DIAMOND,
+                    )
                 plt.imshow(img2)
                 plt.show()
 
@@ -249,8 +282,10 @@ def build_feature_index(verbose=False, save_keras_output=False, include_top=True
 
 if __name__ == '__main__':
     pooling = None  # None or 'avg' or 'max'
-    build_feature_index(verbose=False,
-                        save_keras_output=True,
-                        include_top=False,
-                        pooling=pooling,
-                        data_folder='128x128/')
+    build_feature_index(
+        verbose=False,
+        save_keras_output=True,
+        include_top=False,
+        pooling=pooling,
+        data_folder='128x128/',
+    )

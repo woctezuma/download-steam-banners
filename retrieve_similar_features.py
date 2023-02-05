@@ -11,8 +11,17 @@ import steamspypi
 from keras.preprocessing.image import load_img
 from sklearn.neighbors import NearestNeighbors
 
-from build_feature_index import get_descriptor_database_filename, get_descriptor_img_id_filename, convert_label_database
-from build_feature_index import get_label_database_filename, load_keras_model, label_image, get_frozen_app_ids
+from build_feature_index import (
+    get_descriptor_database_filename,
+    get_descriptor_img_id_filename,
+    convert_label_database,
+)
+from build_feature_index import (
+    get_label_database_filename,
+    load_keras_model,
+    label_image,
+    get_frozen_app_ids,
+)
 from build_search_index import app_id_to_image_filename, list_app_ids
 from download_steam_banners import get_app_details
 from retrieve_similar_banners import get_store_url
@@ -21,7 +30,11 @@ from retrieve_similar_banners import get_store_url
 async def download_steam_banner_again(app_id, banner_file_name):
     async with aiohttp.ClientSession() as session:
         if not Path(banner_file_name).exists():
-            banner_url = 'https://steamcdn-a.akamaihd.net/steam/apps/' + str(app_id) + '/header.jpg'
+            banner_url = (
+                'https://steamcdn-a.akamaihd.net/steam/apps/'
+                + str(app_id)
+                + '/header.jpg'
+            )
 
             # Reference: https://stackoverflow.com/a/51745925
             async with session.get(banner_url) as resp:
@@ -29,25 +42,44 @@ async def download_steam_banner_again(app_id, banner_file_name):
                     f = await aiofiles.open(banner_file_name, mode='wb')
                     await f.write(await resp.read())
                     await f.close()
-                    print('Banner downloaded to {} for appID {}.'.format(banner_file_name, app_id))
+                    print(
+                        'Banner downloaded to {} for appID {}.'.format(
+                            banner_file_name,
+                            app_id,
+                        ),
+                    )
                 else:
                     print('Banner for appID {} could not be downloaded.'.format(app_id))
 
     return
 
 
-def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor_img_id=None,
-                              label_database=None, keras_model=None, target_model_size=None, pooling=None, knn=None,
-                              data_folder=None,
-                              images_are_store_banners=True):
+def retrieve_similar_features(
+    query_app_id,
+    descriptor_database=None,
+    descriptor_img_id=None,
+    label_database=None,
+    keras_model=None,
+    target_model_size=None,
+    pooling=None,
+    knn=None,
+    data_folder=None,
+    images_are_store_banners=True,
+):
     image_filename = app_id_to_image_filename(query_app_id, data_folder=data_folder)
 
     if keras_model is not None:
-
         if images_are_store_banners and not Path(image_filename).exists():
-            print('File {} not found: appID {} likely unavailable in this region.'.format(image_filename, query_app_id))
+            print(
+                'File {} not found: appID {} likely unavailable in this region.'.format(
+                    image_filename,
+                    query_app_id,
+                ),
+            )
             loop = asyncio.get_event_loop()
-            loop.run_until_complete(download_steam_banner_again(query_app_id, image_filename))
+            loop.run_until_complete(
+                download_steam_banner_again(query_app_id, image_filename),
+            )
 
         image = load_img(image_filename, target_size=target_model_size)
         query_des = label_image(image, keras_model)  # runtime: 1 second
@@ -71,10 +103,12 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
 
         # FLANN parameters
         FLANN_INDEX_LSH = 6
-        index_params = dict(algorithm=FLANN_INDEX_LSH,
-                            table_number=6,  # 12
-                            key_size=12,  # 20
-                            multi_probe_level=1)  # 2
+        index_params = dict(
+            algorithm=FLANN_INDEX_LSH,
+            table_number=6,  # 12
+            key_size=12,  # 20
+            multi_probe_level=1,
+        )  # 2
 
     search_params = dict(checks=50)  # or pass empty dictionary
 
@@ -98,7 +132,9 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         app_ids = get_frozen_app_ids()
 
     except FileNotFoundError:
-        print('Assumption: no new banner was downloaded since the last feature pre-computation.')
+        print(
+            'Assumption: no new banner was downloaded since the last feature pre-computation.',
+        )
         app_ids = list_app_ids(data_folder=data_folder)
 
     if keras_model is not None:
@@ -109,7 +145,11 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
             try:
                 row_no = app_ids.index(query_app_id)
             except ValueError:
-                print('AppID {} not part of frozen appIDs: it is likely unavailable in my region.'.format(query_app_id))
+                print(
+                    'AppID {} not part of frozen appIDs: it is likely unavailable in my region.'.format(
+                        query_app_id,
+                    ),
+                )
                 row_no = None
 
             if row_no is not None:
@@ -133,7 +173,11 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     start = time()
     if knn is None:
         # FLANN with L2 distance
-        matches = flann.knnMatch(query_des, trimmed_descriptor_database, k=num_neighbors)
+        matches = flann.knnMatch(
+            query_des,
+            trimmed_descriptor_database,
+            k=num_neighbors,
+        )
     else:
         # Sci-Kit Learn with cosine similarity. Reshape data as it contains a single sample.
         _, matches = knn.kneighbors(query_des.reshape(1, -1), n_neighbors=num_neighbors)
@@ -143,7 +187,9 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
         # When we use the Keras model, a Steam banner is represented by only ONE feature, hence the use of 'matches[0]'.
         try:
             # FLANN
-            reference_app_id_counter = [app_ids[element.trainIdx] for element in matches[0]]
+            reference_app_id_counter = [
+                app_ids[element.trainIdx] for element in matches[0]
+            ]
         except AttributeError:
             # Sci-Kit Learn
             reference_app_id_counter = [app_ids[element] for element in matches[0]]
@@ -157,7 +203,9 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
             except IndexError:
                 pass
 
-        good_img_ids = [int(descriptor_img_id[good_match.trainIdx]) for good_match in good_matches]
+        good_img_ids = [
+            int(descriptor_img_id[good_match.trainIdx]) for good_match in good_matches
+        ]
 
         good_app_ids = [app_ids[img_id] for img_id in good_img_ids]
 
@@ -166,12 +214,21 @@ def retrieve_similar_features(query_app_id, descriptor_database=None, descriptor
     return reference_app_id_counter
 
 
-def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed=10, only_print_banners=False,
-                  use_markdown_syntax=True):
+def print_ranking(
+    query_app_id,
+    reference_app_id_counter,
+    num_elements_displayed=10,
+    only_print_banners=False,
+    use_markdown_syntax=True,
+):
     try:
         app_details = get_app_details(query_app_id)
     except FileNotFoundError:
-        print('App details for appID {} not found: appID is likely unavailable in this region'.format(query_app_id))
+        print(
+            'App details for appID {} not found: appID is likely unavailable in this region'.format(
+                query_app_id,
+            ),
+        )
         app_details = None
 
     if app_details is not None:
@@ -181,10 +238,22 @@ def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed
 
     if use_markdown_syntax:
         # Markdown
-        print('\nQuery appID: {} ([{}]({}))\n'.format(query_app_id, app_name, get_store_url(query_app_id)))
+        print(
+            '\nQuery appID: {} ([{}]({}))\n'.format(
+                query_app_id,
+                app_name,
+                get_store_url(query_app_id),
+            ),
+        )
     else:
         # BBCode
-        print('\nQuery appID: {} ([url={}]{}[/url])\n'.format(query_app_id, get_store_url(query_app_id), app_name))
+        print(
+            '\nQuery appID: {} ([url={}]{}[/url])\n'.format(
+                query_app_id,
+                get_store_url(query_app_id),
+                app_name,
+            ),
+        )
 
     for rank, app_id in enumerate(reference_app_id_counter):
         app_details = get_app_details(app_id)
@@ -199,19 +268,39 @@ def print_ranking(query_app_id, reference_app_id_counter, num_elements_displayed
                 # Markdown
                 # Reference: https://stackoverflow.com/a/14747656
                 image_link_str = '[<img alt="{}" src="{}" width="{}">]({})'
-                print(image_link_str.format(app_name, banner_url, image_width, get_store_url(app_id)))
+                print(
+                    image_link_str.format(
+                        app_name,
+                        banner_url,
+                        image_width,
+                        get_store_url(app_id),
+                    ),
+                )
             else:
                 # BBCode
                 image_link_str = '[url={}][img="width:{}px;"]{}[/img][/url]'
-                print(image_link_str.format(get_store_url(app_id), image_width, banner_url),
-                      end='')
+                print(
+                    image_link_str.format(
+                        get_store_url(app_id),
+                        image_width,
+                        banner_url,
+                    ),
+                    end='',
+                )
                 # Line break every 5 lines
                 if (rank + 1) % max_num_banners_per_row == 0:
                     print()
 
         else:
             # No banner, so that this is easier to read in Python console.
-            print('{}) app: {} ({} @ {})'.format(rank + 1, app_id, app_name, get_store_url(app_id)))
+            print(
+                '{}) app: {} ({} @ {})'.format(
+                    rank + 1,
+                    app_id,
+                    app_name,
+                    get_store_url(app_id),
+                ),
+            )
 
         if rank >= (num_elements_displayed - 1):
             break
@@ -243,7 +332,16 @@ def load_benchmarked_app_ids(append_hard_coded_app_ids=True):
 
     # Append hard-coded appIDs
 
-    additional_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600', '814380']
+    additional_app_ids = [
+        '620',
+        '364470',
+        '504230',
+        '583950',
+        '646570',
+        '863550',
+        '794600',
+        '814380',
+    ]
 
     benchmarked_app_ids = top_100_app_ids
     if append_hard_coded_app_ids:
@@ -253,14 +351,16 @@ def load_benchmarked_app_ids(append_hard_coded_app_ids=True):
     return benchmarked_app_ids
 
 
-def batch_retrieve_similar_features(query_app_ids=None,
-                                    use_keras_features=True,
-                                    use_cosine_similarity=True,
-                                    print_banners=True,
-                                    use_markdown_syntax=True,
-                                    pooling=None,
-                                    data_folder=None,
-                                    images_are_store_banners=True):
+def batch_retrieve_similar_features(
+    query_app_ids=None,
+    use_keras_features=True,
+    use_cosine_similarity=True,
+    print_banners=True,
+    use_markdown_syntax=True,
+    pooling=None,
+    data_folder=None,
+    images_are_store_banners=True,
+):
     if query_app_ids is None:
         query_app_ids = load_benchmarked_app_ids()
 
@@ -280,7 +380,10 @@ def batch_retrieve_similar_features(query_app_ids=None,
             else:
                 label_database = convert_label_database(pooling)
 
-        keras_model, target_model_size = load_keras_model(include_top=False, pooling=pooling)
+        keras_model, target_model_size = load_keras_model(
+            include_top=False,
+            pooling=pooling,
+        )
 
         if use_cosine_similarity:
             knn = NearestNeighbors(metric='cosine', algorithm='brute')
@@ -302,27 +405,39 @@ def batch_retrieve_similar_features(query_app_ids=None,
     if feature_database_exists:
         for query_app_id in query_app_ids:
             try:
-                reference_app_id_counter = retrieve_similar_features(query_app_id,
-                                                                     descriptor_database,
-                                                                     descriptor_img_id,
-                                                                     label_database,
-                                                                     keras_model,
-                                                                     target_model_size,
-                                                                     pooling,
-                                                                     knn,
-                                                                     data_folder=data_folder,
-                                                                     images_are_store_banners=images_are_store_banners)
+                reference_app_id_counter = retrieve_similar_features(
+                    query_app_id,
+                    descriptor_database,
+                    descriptor_img_id,
+                    label_database,
+                    keras_model,
+                    target_model_size,
+                    pooling,
+                    knn,
+                    data_folder=data_folder,
+                    images_are_store_banners=images_are_store_banners,
+                )
             except FileNotFoundError:
-                print('Query image not found: appID {} likely unavailable in this region.'.format(query_app_id))
+                print(
+                    'Query image not found: appID {} likely unavailable in this region.'.format(
+                        query_app_id,
+                    ),
+                )
                 continue
-            print_ranking(query_app_id, reference_app_id_counter, only_print_banners=print_banners,
-                          use_markdown_syntax=use_markdown_syntax)
+            print_ranking(
+                query_app_id,
+                reference_app_id_counter,
+                only_print_banners=print_banners,
+                use_markdown_syntax=use_markdown_syntax,
+            )
 
     return
 
 
 if __name__ == '__main__':
-    query_app_ids = None  # ['620', '364470', '504230', '583950', '646570', '863550', '794600']
+    query_app_ids = (
+        None  # ['620', '364470', '504230', '583950', '646570', '863550', '794600']
+    )
 
     use_keras_features = True
     use_cosine_similarity = True
@@ -330,11 +445,13 @@ if __name__ == '__main__':
     use_markdown_syntax = True
 
     for pooling in [None]:  # , 'max', 'avg']:  # None or 'avg' or 'max'
-        batch_retrieve_similar_features(query_app_ids,
-                                        use_keras_features,
-                                        use_cosine_similarity,
-                                        print_banners,
-                                        use_markdown_syntax,
-                                        pooling,
-                                        data_folder='128x128/',
-                                        images_are_store_banners=True)
+        batch_retrieve_similar_features(
+            query_app_ids,
+            use_keras_features,
+            use_cosine_similarity,
+            print_banners,
+            use_markdown_syntax,
+            pooling,
+            data_folder='128x128/',
+            images_are_store_banners=True,
+        )

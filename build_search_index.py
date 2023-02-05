@@ -26,7 +26,9 @@ def get_search_index_filename(hashmethod=None):
         hashmethod_str = ''
     else:
         hashmethod_str = '_' + hashmethod
-    search_index_filename = get_hash_folder() + 'search_index' + hashmethod_str + '.json'
+    search_index_filename = (
+        get_hash_folder() + 'search_index' + hashmethod_str + '.json'
+    )
     return search_index_filename
 
 
@@ -76,8 +78,7 @@ def build_search_index(hashmethod=None):
     except (FileNotFoundError, json.decoder.JSONDecodeError):
         search_index = dict()
 
-    for (counter, app_id) in enumerate(sorted(app_ids, key=int)):
-
+    for counter, app_id in enumerate(sorted(app_ids, key=int)):
         if (counter % 1000) == 0:
             print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
             print('Elapsed time: {:.2f} s'.format(time() - start))
@@ -86,7 +87,9 @@ def build_search_index(hashmethod=None):
         image_filename = app_id_to_image_filename(app_id)
         image = Image.open(image_filename)
         hash_value = hashfunc(image)
-        hash_as_str = str(hash_value)  # NB: To convert back, use imagehash.hex_to_hash()
+        hash_as_str = str(
+            hash_value,
+        )  # NB: To convert back, use imagehash.hex_to_hash()
         try:
             if app_id not in search_index[hash_as_str]:
                 search_index[hash_as_str].append(app_id)
