@@ -95,8 +95,8 @@ Results are shown [here](https://github.com/woctezuma/download-steam-banners/wik
 
 <!-- Definitions -->
 
-[build]: <https://travis-ci.org/woctezuma/download-steam-banners>
-[build-image]: <https://travis-ci.org/woctezuma/download-steam-banners.svg?branch=master>
+[build]: <https://github.com/woctezuma/download-steam-banners/actions>
+[build-image]: <https://github.com/woctezuma/download-steam-banners/workflows/Python package/badge.svg?branch=master>
 
 [pyup]: <https://pyup.io/repos/github/woctezuma/download-steam-banners/>
 [dependency-image]: <https://pyup.io/repos/github/woctezuma/download-steam-banners/shield.svg>
