@@ -105,7 +105,7 @@ Results are shown [here](https://github.com/woctezuma/download-steam-banners/wik
 [codecov]: <https://codecov.io/gh/woctezuma/download-steam-banners>
 [codecov-image]: <https://codecov.io/gh/woctezuma/download-steam-banners/branch/master/graph/badge.svg>
 
-[codacy]: <https://www.codacy.com/app/woctezuma/download-steam-banners>
+[codacy]: <https://app.codacy.com/gh/woctezuma/download-steam-banners>
 [codacy-image]: <https://api.codacy.com/project/badge/Grade/c3ff7d48630544209f3adf29b03e1048>
 
 [download_steam_banners]: <https://colab.research.google.com/github/woctezuma/google-colab/blob/master/download_steam_banners.ipynb>
