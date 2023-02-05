@@ -22,10 +22,7 @@ def get_hash_folder():
 
 
 def get_search_index_filename(hashmethod=None):
-    if hashmethod is None:
-        hashmethod_str = ''
-    else:
-        hashmethod_str = '_' + hashmethod
+    hashmethod_str = '' if hashmethod is None else '_' + hashmethod
     search_index_filename = (
         get_hash_folder() + 'search_index' + hashmethod_str + '.json'
     )
@@ -64,7 +61,9 @@ def build_search_index(hashmethod=None):
     elif hashmethod == 'whash-haar':  # Haar wavelet hash
         hashfunc = imagehash.whash
     else:  # Daubechies wavelet hash
-        hashfunc = lambda img: imagehash.whash(img, mode='db4')
+
+        def hashfunc(img):
+            return imagehash.whash(img, mode='db4')
 
     app_ids = list_app_ids()
 
@@ -73,15 +72,15 @@ def build_search_index(hashmethod=None):
     start = time()
 
     try:
-        with open(get_search_index_filename(hashmethod), 'r') as f:
+        with open(get_search_index_filename(hashmethod)) as f:
             search_index = json.load(f)
     except (FileNotFoundError, json.decoder.JSONDecodeError):
-        search_index = dict()
+        search_index = {}
 
     for counter, app_id in enumerate(sorted(app_ids, key=int)):
         if (counter % 1000) == 0:
-            print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
-            print('Elapsed time: {:.2f} s'.format(time() - start))
+            print(f'[{counter}/{num_games}] appID = {app_id}')
+            print(f'Elapsed time: {time() - start:.2f} s')
             start = time()
 
         image_filename = app_id_to_image_filename(app_id)
@@ -104,5 +103,5 @@ def build_search_index(hashmethod=None):
 
 if __name__ == '__main__':
     for hashmethod in ['ahash', 'phash', 'dhash', 'whash-haar', 'whash-db4']:
-        print('Hash method: {}'.format(hashmethod))
+        print(f'Hash method: {hashmethod}')
         search_index = build_search_index(hashmethod)

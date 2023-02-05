@@ -10,19 +10,19 @@ import numpy as np
 import steamspypi
 from sklearn.neighbors import NearestNeighbors
 
-from build_feature_index import get_features_folder_name
 from build_feature_index import (
-    get_label_database_filename,
     convert_label_database,
+    get_features_folder_name,
     get_frozen_app_ids,
+    get_label_database_filename,
 )
 
 
 def load_game_names_from_steamspy():
     data = steamspypi.load()
 
-    game_names = dict()
-    for app_id in data.keys():
+    game_names = {}
+    for app_id in data:
         game_names[app_id] = data[app_id]['name']
 
     return game_names
@@ -57,7 +57,7 @@ def get_banner_url(app_id):
 
 def populate_database(pooling=None):
     try:
-        print('\n[pooling] {}'.format(pooling))
+        print(f'\n[pooling] {pooling}')
         label_database = np.load(get_label_database_filename(pooling))
     except FileNotFoundError or OSError:
         if pooling is None:
@@ -78,11 +78,11 @@ def populate_database(pooling=None):
     # Caveat: the output 'dist' returned by knn.kneighbors() is the 'cosine distance', not the cosine similarity!
     # Reference: https://en.wikipedia.org/wiki/Cosine_similarity
     dist, matches = knn.kneighbors(X=query, n_neighbors=num_neighbors)
-    print('Elapsed time: {:.2f} s'.format(time() - start))
+    print(f'Elapsed time: {time() - start:.2f} s')
 
     app_ids = get_frozen_app_ids()
 
-    sim_dict = dict()
+    sim_dict = {}
     for counter, query_app_id in enumerate(app_ids):
         last_index = num_neighbors - 1
 
@@ -92,7 +92,7 @@ def populate_database(pooling=None):
         cosine_distance = dist[counter][last_index]
         second_best_similarity_score = 1.0 - cosine_distance
 
-        sim_dict[query_app_id] = dict()
+        sim_dict[query_app_id] = {}
         sim_dict[query_app_id]['app_id'] = second_best_matched_app_id
         sim_dict[query_app_id]['similarity'] = second_best_similarity_score
 
@@ -114,7 +114,7 @@ def get_unique_games_file_name(pooling=None):
 
 
 def load_sim_dict(pooling=None):
-    with open(get_unique_games_file_name(pooling=pooling), 'r') as f:
+    with open(get_unique_games_file_name(pooling=pooling)) as f:
         sim_dict = json.load(f)
 
     return sim_dict

@@ -31,8 +31,8 @@ def get_output_data_path():
 def get_app_ids():
     successful_app_id_filename = get_input_data_path() + 'successful_appIDs.txt'
 
-    with open(successful_app_id_filename, 'r') as f:
-        parsed_app_ids = set([line.strip() for line in f])
+    with open(successful_app_id_filename) as f:
+        parsed_app_ids = {line.strip() for line in f}
 
     return parsed_app_ids
 
@@ -42,7 +42,7 @@ def get_app_details(app_id):
         get_input_data_path() + 'appdetails/' + 'appID_' + str(app_id) + '.json'
     )
 
-    with open(json_filename, 'r', encoding='utf8') as f:
+    with open(json_filename, encoding='utf8') as f:
         app_details = json.load(f)
 
     return app_details

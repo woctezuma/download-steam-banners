@@ -12,15 +12,13 @@ from keras.preprocessing.image import load_img
 from sklearn.neighbors import NearestNeighbors
 
 from build_feature_index import (
+    convert_label_database,
     get_descriptor_database_filename,
     get_descriptor_img_id_filename,
-    convert_label_database,
-)
-from build_feature_index import (
-    get_label_database_filename,
-    load_keras_model,
-    label_image,
     get_frozen_app_ids,
+    get_label_database_filename,
+    label_image,
+    load_keras_model,
 )
 from build_search_index import app_id_to_image_filename, list_app_ids
 from download_steam_banners import get_app_details
@@ -49,7 +47,7 @@ async def download_steam_banner_again(app_id, banner_file_name):
                         ),
                     )
                 else:
-                    print('Banner for appID {} could not be downloaded.'.format(app_id))
+                    print(f'Banner for appID {app_id} could not be downloaded.')
 
     return
 
@@ -91,7 +89,7 @@ def retrieve_similar_features(
 
         # FLANN parameters
         FLANN_INDEX_KDTREE = 1
-        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+        index_params = {"algorithm": FLANN_INDEX_KDTREE, "trees": 5}
     else:
         query_img = cv.imread(image_filename, cv.IMREAD_COLOR)
 
@@ -103,14 +101,14 @@ def retrieve_similar_features(
 
         # FLANN parameters
         FLANN_INDEX_LSH = 6
-        index_params = dict(
-            algorithm=FLANN_INDEX_LSH,
-            table_number=6,  # 12
-            key_size=12,  # 20
-            multi_probe_level=1,
-        )  # 2
+        index_params = {
+            "algorithm": FLANN_INDEX_LSH,
+            "table_number": 6,  # 12
+            "key_size": 12,  # 20
+            "multi_probe_level": 1,
+        }  # 2
 
-    search_params = dict(checks=50)  # or pass empty dictionary
+    search_params = {"checks": 50}  # or pass empty dictionary
 
     flann = cv.FlannBasedMatcher(index_params, search_params)
 
@@ -181,7 +179,7 @@ def retrieve_similar_features(
     else:
         # Sci-Kit Learn with cosine similarity. Reshape data as it contains a single sample.
         _, matches = knn.kneighbors(query_des.reshape(1, -1), n_neighbors=num_neighbors)
-    print('Elapsed time: {:.2f} s'.format(time() - start))
+    print(f'Elapsed time: {time() - start:.2f} s')
 
     if keras_model is not None:
         # When we use the Keras model, a Steam banner is represented by only ONE feature, hence the use of 'matches[0]'.
@@ -231,10 +229,7 @@ def print_ranking(
         )
         app_details = None
 
-    if app_details is not None:
-        app_name = app_details['name']
-    else:
-        app_name = 'Unknown'
+    app_name = app_details['name'] if app_details is not None else 'Unknown'
 
     if use_markdown_syntax:
         # Markdown
@@ -315,7 +310,7 @@ def normalized(a, axis=-1, order=2):
 
 
 def get_top_100_app_ids():
-    data_request = dict()
+    data_request = {}
     data_request['request'] = 'top100in2weeks'
 
     data = steamspypi.download(data_request)
@@ -372,7 +367,7 @@ def batch_retrieve_similar_features(
 
     if use_keras_features:
         try:
-            print('\n[pooling] {}'.format(pooling))
+            print(f'\n[pooling] {pooling}')
             label_database = np.load(get_label_database_filename(pooling))
         except FileNotFoundError or OSError:
             if pooling is None:

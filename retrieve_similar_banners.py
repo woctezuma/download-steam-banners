@@ -8,13 +8,13 @@ from download_steam_banners import get_app_details
 
 
 def get_search_index_with_hash_as_str(hashmethod):
-    with open(get_search_index_filename(hashmethod), 'r') as f:
+    with open(get_search_index_filename(hashmethod)) as f:
         search_index_with_hash_as_str = json.load(f)
     return search_index_with_hash_as_str
 
 
 def get_hash_search_index(search_index_with_hash_as_str):
-    hash_search_index = dict()
+    hash_search_index = {}
 
     for hash_as_str in search_index_with_hash_as_str:
         hash_value = imagehash.hex_to_hash(hash_as_str)
@@ -24,7 +24,7 @@ def get_hash_search_index(search_index_with_hash_as_str):
 
 
 def reverse_search_index(hash_search_index):
-    reversed_search_index = dict()
+    reversed_search_index = {}
 
     for hash_value in hash_search_index:
         for app_id in hash_search_index[hash_value]:
@@ -69,7 +69,7 @@ def test_hash_search_index(hashmethod):
     for query_app_id in query_app_ids:
         app_details = get_app_details(query_app_id)
         app_name = app_details['name']
-        print('\nQuery appID: {} ({})'.format(query_app_id, app_name))
+        print(f'\nQuery appID: {query_app_id} ({app_name})')
 
         query_hash = reversed_search_index[query_app_id]
         similar_app_ids = retrieve_similar_banners(
@@ -78,7 +78,7 @@ def test_hash_search_index(hashmethod):
             num_neighbors=3,
         )
 
-        print('Similar appIDs: {}'.format(similar_app_ids))
+        print(f'Similar appIDs: {similar_app_ids}')
         for app_id_group in similar_app_ids:
             for counter, app_id in enumerate(app_id_group):
                 app_details = get_app_details(app_id)
@@ -97,7 +97,7 @@ def test_hash_search_index(hashmethod):
 
 def main():
     for hashmethod in ['ahash', 'phash', 'dhash', 'whash-haar', 'whash-db4']:
-        print('\nHash method: {}'.format(hashmethod))
+        print(f'\nHash method: {hashmethod}')
         test_hash_search_index(hashmethod)
 
     return
