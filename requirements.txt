@@ -3,7 +3,7 @@ aiofiles==0.4.0
 opencv-contrib-python==4.7.0.68
 imagehash==4.0
 matplotlib==3.1.1
-cntk==2.7
+cntk==2.7.post2
 keras==2.2.5
 pillow==9.3.0
 scikit-learn==0.24.2
