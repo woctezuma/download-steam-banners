@@ -7,5 +7,5 @@ cntk==2.7
 keras==2.2.5
 pillow==9.2.0
 scikit-learn==0.21.3
-steamspypi==1.0.0
+steamspypi==1.1.1
 
