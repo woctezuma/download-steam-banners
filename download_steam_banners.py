@@ -38,7 +38,9 @@ def get_app_ids():
 
 
 def get_app_details(app_id):
-    json_filename = get_input_data_path() + 'appdetails/' + 'appID_' + str(app_id) + '.json'
+    json_filename = (
+        get_input_data_path() + 'appdetails/' + 'appID_' + str(app_id) + '.json'
+    )
 
     with open(json_filename, 'r', encoding='utf8') as f:
         app_details = json.load(f)
@@ -109,11 +111,13 @@ def get_background_url(app_details):
 
 async def main(image_type='banner', screenshot_index=0, is_thumbnail=True):
     async with aiohttp.ClientSession() as session:
-
         for app_id in sorted(get_app_ids(), key=int):
-
             if image_type == 'screenshot':
-                banner_file_name_as_str = get_screenshot_file_name(app_id, screenshot_index, is_thumbnail)
+                banner_file_name_as_str = get_screenshot_file_name(
+                    app_id,
+                    screenshot_index,
+                    is_thumbnail,
+                )
             elif image_type == 'background':
                 banner_file_name_as_str = get_background_file_name(app_id)
             else:
@@ -132,10 +136,13 @@ async def main(image_type='banner', screenshot_index=0, is_thumbnail=True):
                 continue
 
             if app_type == 'game':
-
                 try:
                     if image_type == 'screenshot':
-                        banner_url = get_screenshot_url(app_details, screenshot_index, is_thumbnail)
+                        banner_url = get_screenshot_url(
+                            app_details,
+                            screenshot_index,
+                            is_thumbnail,
+                        )
                     elif image_type == 'background':
                         banner_url = get_background_url(app_details)
                     else:
@@ -149,9 +156,18 @@ async def main(image_type='banner', screenshot_index=0, is_thumbnail=True):
                         f = await aiofiles.open(banner_file_name, mode='wb')
                         await f.write(await resp.read())
                         await f.close()
-                        print('Banner downloaded to {} for appID {}.'.format(banner_file_name, app_id))
+                        print(
+                            'Banner downloaded to {} for appID {}.'.format(
+                                banner_file_name,
+                                app_id,
+                            ),
+                        )
                     else:
-                        print('Banner for appID {} could not be downloaded.'.format(app_id))
+                        print(
+                            'Banner for appID {} could not be downloaded.'.format(
+                                app_id,
+                            ),
+                        )
 
     return
 
