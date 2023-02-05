@@ -3,14 +3,11 @@ from time import time
 
 import cv2 as cv
 import numpy as np
-from keras.applications.mobilenet import MobileNet
-from keras.applications.mobilenet import decode_predictions
-from keras.applications.mobilenet import preprocess_input
-from keras.preprocessing.image import img_to_array
-from keras.preprocessing.image import load_img
+from keras.applications.mobilenet import MobileNet, decode_predictions, preprocess_input
+from keras.preprocessing.image import img_to_array, load_img
 from matplotlib import pyplot as plt
 
-from build_search_index import list_app_ids, app_id_to_image_filename
+from build_search_index import app_id_to_image_filename, list_app_ids
 from download_steam_banners import get_app_details
 
 
@@ -34,10 +31,7 @@ def get_descriptor_img_id_filename():
 
 
 def get_label_database_filename(pooling=None):
-    if pooling is None:
-        pooling_str = ''
-    else:
-        pooling_str = '.' + pooling
+    pooling_str = '' if pooling is None else '.' + pooling
 
     label_database_filename = (
         get_features_folder_name() + 'label_database' + pooling_str + '.npy'
@@ -51,7 +45,7 @@ def get_frozen_app_ids_filename():
 
 
 def get_frozen_app_ids():
-    with open(get_frozen_app_ids_filename(), 'r') as f:
+    with open(get_frozen_app_ids_filename()) as f:
         frozen_app_ids = [app_id.strip() for app_id in f.readlines()]
 
     return frozen_app_ids
@@ -105,7 +99,7 @@ def load_keras_model(include_top=True, pooling='avg'):
 
     num_channels = 3
     # Image data format: channels last
-    input_shape = tuple(list(target_model_size) + [num_channels])
+    input_shape = (*list(target_model_size), num_channels)
 
     if include_top:
         model = MobileNet(
@@ -147,7 +141,7 @@ def label_image(image, model, verbose=False):
         label = labels[0][0]
 
         # print the classification
-        print('%s (%.2f%%)' % (label[1], label[2] * 100))
+        print('{} ({:.2f}%)'.format(label[1], label[2] * 100))
 
     return yhat
 
@@ -206,7 +200,7 @@ def build_feature_index(
                 pass
 
         if (counter % 1200) == 0:
-            print('[{}/{}] appID = {}'.format(counter, num_games, app_id))
+            print(f'[{counter}/{num_games}] appID = {app_id}')
             print(
                 'Elapsed time for computing image features: {:.2f} s'.format(
                     time() - start,
@@ -252,7 +246,7 @@ def build_feature_index(
             if verbose:
                 app_details = get_app_details(app_id)
                 app_name = app_details['name']
-                print('AppID = {} ({})'.format(app_id, app_name))
+                print(f'AppID = {app_id} ({app_name})')
 
                 # draw only keypoints location,not size and orientation
                 # If the OpenCV build for Python is fixed:

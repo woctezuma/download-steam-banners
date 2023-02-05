@@ -63,10 +63,7 @@ def resize_all_images(
         if not Path(output_path).exists():
             image = cv2.imread(input_path)
 
-            if apply_center_crop:
-                center_cropped_image = center_crop(image)
-            else:
-                center_cropped_image = image
+            center_cropped_image = center_crop(image) if apply_center_crop else image
 
             if apply_resize:
                 resized_image = cv2.resize(center_cropped_image, tuple(output_shape))
