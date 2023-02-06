@@ -2,9 +2,9 @@ aiohttp==3.8.3
 aiofiles==0.8.0
 opencv-contrib-python==4.6.0.66
 imagehash==4.3.1
-matplotlib==3.1.1
+matplotlib==3.3.4
 cntk==2.7.post2
-keras==2.2.5
+keras==2.10.0
 pillow==8.4.0
 scikit-learn==0.24.2
 steamspypi==1.1.1
