@@ -1,4 +1,4 @@
-aiohttp==3.8.6
+aiohttp==3.9.0
 aiofiles==0.8.0
 opencv-contrib-python==4.8.1.78
 imagehash==4.3.1
