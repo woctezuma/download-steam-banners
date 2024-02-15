@@ -2,7 +2,7 @@ aiohttp==3.9.2
 aiofiles==0.8.0
 opencv-contrib-python==4.8.1.78
 imagehash==4.3.1
-matplotlib==3.3.4
+matplotlib==3.8.3
 cntk==2.7.post2
 keras==2.10.0
 pillow==10.0.1
