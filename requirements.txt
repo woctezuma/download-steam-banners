@@ -5,7 +5,7 @@ imagehash==4.3.1
 matplotlib==3.8.3
 cntk==2.7.post2
 keras==2.10.0
-pillow==10.0.1
+pillow==10.2.0
 scikit-learn==0.24.2
 steamspypi==1.1.1
 
