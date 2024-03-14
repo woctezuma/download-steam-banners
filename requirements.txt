@@ -1,5 +1,5 @@
 aiohttp==3.9.2
-aiofiles==0.8.0
+aiofiles==23.2.1
 opencv-contrib-python==4.8.1.78
 imagehash==4.3.1
 matplotlib==3.8.3
